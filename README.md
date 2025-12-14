@@ -1,10 +1,10 @@
-# CustomBeatmapsV4
+# CustomBeatmapsV5
 
 _Bigger, Bolder, Beatable!_
 
-### This is an UNOFFICIAL mod for Unbeatable Demo that lets you play and create custom beatmaps.
+### This is an UNOFFICIAL mod for UNBEATABLE that lets you play and create custom beatmaps.
 
-Custom Beatmaps Mod for UNBEATABLE Demo `V1.5.28` with ONLINE mode and HIGH SCORES _(this time for real!)_
+Custom Beatmaps Mod for UNBEATABLE `V1.5.7` with ONLINE mode and HIGH SCORES _(this time for real!)_
 
 **[Visit our Discord](https://discord.gg/XzqMhRMmhC)**
 
@@ -12,21 +12,21 @@ Custom Beatmaps Mod for UNBEATABLE Demo `V1.5.28` with ONLINE mode and HIGH SCOR
 # Features
 - Play custom Beatmaps either locally or from our discord community!
 - Test your Beatmaps directly from their OSU directory without uploads or conversions
-- High (and low) scores for both Custom Beatmaps AND UNBEATABLE Demo official beatmaps
+- High (and low) scores for both Custom Beatmaps AND UNBEATABLE official beatmaps
 - Upload your existing white label scores
 
 # Installation
 
-0) Make sure UNBEATABLE Demo is up to date and patched to the current version
-1) [Download the latest release of the mod](https://github.com/TacoDogUnbeatableThing/CustomBeatmapsV3/releases)
+0) Make sure UNBEATABLE is up to date and patched to the current version
+1) [Download the latest release of the mod](https://github.com/unbeatable-modding/CustomBeatmapsV5/releases)
 2) Locate UNBEATABLE's game files (Steam Instructions. For Itch just open the game installation folder)
-    1) Locate `UNBEATABLE Demo` in your Steam Library
-    2) Right click `UNBEATABLE Demo` and click `Properties`
+    1) Locate `UNBEATABLE` in your Steam Library
+    2) Right click `UNBEATABLE` and click `Properties`
     3) In the open panel, navigate to `LOCAL FILES`
     4) In the `LOCAL FILES` page, click `Browse...`
 3) If you downloaded the old mod (CustomBeatmapsV2), there is no need for conversions, everything should work as it did before!
 4) If you downloaded the REALLY old mod (CustomBeatmapsV1), rename `USER_BEATMAPS` to `USER_PACKAGES`
-5) Drag and drop the contents of the mod's zip file directly into the Unbeatable game directory (same directory as `UNBEATABLE Demo.exe`)
+5) Drag and drop the contents of the mod's zip file directly into the Unbeatable game directory (same directory as `UNBEATABLE.exe`)
 
 Before:
 
@@ -48,7 +48,7 @@ After:
 
 1) In the CustomBeatmaps screen, Open the `OSU!` tab and select your beatmap
 2) Press `EXPORT`
-3) Check the `UNBEATABLE Demo` game directory for a zip file of your beatmap
+3) Check the `UNBEATABLE` game directory for a zip file of your beatmap
 4) Upload this beatmap to the [discord server](https://discord.gg/XzqMhRMmhC)'s #beatmap-verify channel. A mod will take a look, once your beatmap is approved & uploaded it will appear in the online view!
 
 
@@ -64,7 +64,7 @@ Screenshot from v3 but it's similar enough
 
 ## Disclaimer
 
-This is an UNOFFICIAL MOD for UNBEATABLE Demo that is NOT to be associated with D-Cell Games.
+This is an UNOFFICIAL MOD for UNBEATABLE that is NOT to be associated with D-Cell Games.
 
 NONE of the user beatmaps are endorsed or associated with D-Cell Games.
 
@@ -74,8 +74,12 @@ NONE of the user beatmaps are endorsed or associated with D-Cell Games.
 [CustomBeatmapsV3]: https://github.com/TacoDogUnbeatableThing/CustomBeatmapsV3
 [CustomBeatmapsV3-author]: https://github.com/TacoDogUnbeatableThing 
 
+[CustomBeatmapsV4]: https://github.com/unbeatable-modding/CustomBeatmapsV4
+[CustomBeatmapsV4-author]: https://github.com/gold-me 
+
 [unbeatable-demo-song-hack]: https://github.com/ErikGXDev/unbeatable-demo-song-hack
 [unbeatable-demo-song-hack-author]: https://github.com/ErikGXDev
 
-- [CustomBeatmapsV3][CustomBeatmapsV3] by [TacoTechnical][CustomBeatmapsV3-author] - MIT Licence (A lot of code has been resued from this mod)
+- [CustomBeatmapsV4][CustomBeatmapsV4] by [gold_me][CustomBeatmapsV4-author] - MIT Licence
+- [CustomBeatmapsV3][CustomBeatmapsV3] by [TacoTechnical][CustomBeatmapsV3-author] - MIT Licence
 - [unbeatable-demo-song-hack][unbeatable-demo-song-hack] by [ErikGXDev][unbeatable-demo-song-hack-author] - MIT License
