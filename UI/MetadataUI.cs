@@ -10,6 +10,7 @@ namespace CustomBeatmaps.UI
     {
         private static string Level;
         private static string FlavorText;
+        private static string PreviewTime;
         private static bool BlindTurn;
         private static bool MotionWarning;
         private static bool FourKey;
@@ -26,6 +27,11 @@ namespace CustomBeatmaps.UI
             var level = GUILayout.TextArea(Level, GUILayout.ExpandWidth(false));
             if (level != Level)
                 Level = level;
+
+            GUILayout.Label("Preview Time: ", GUILayout.ExpandWidth(false));
+            var previewTime = GUILayout.TextArea(PreviewTime, GUILayout.ExpandWidth(false));
+            if (previewTime != PreviewTime)
+                PreviewTime = previewTime;
 
             GUILayout.Label("Flavor Text: ", GUILayout.ExpandWidth(false));
             var flavorText = GUILayout.TextArea(FlavorText);
@@ -57,13 +63,15 @@ namespace CustomBeatmaps.UI
                 Int32.TryParse(Level, out var lvlInt);
                 bmap.Tags.Level = lvlInt;
                 bmap.Tags.FlavorText = FlavorText;
+                Int32.TryParse(PreviewTime, out var previewInt);
+                bmap.Tags.PreviewTime = previewInt;
                 if (BlindTurn)
                     bmap.Tags.Attributes.Add("BT");
                 if (MotionWarning)
                     bmap.Tags.Attributes.Add("MW");
                 if (FourKey)
                     bmap.Tags.Attributes.Add("4K");
-                BeatmapHelper.SetBeatmapJson(bmap.BeatmapPointer.text, bmap.Tags, bmap.BeatmapPath);
+                BeatmapHelper.SetBeatmapJson(bmap.BeatmapPointer.text, bmap.Tags, $"{bmap.DirectoryPath}/{bmap.BeatmapPath}");
             }
         }
 
@@ -71,6 +79,7 @@ namespace CustomBeatmaps.UI
         {
             Level = bmap.Level.ToString();
             FlavorText = bmap.FlavorText;
+            PreviewTime = bmap.Tags.PreviewTime.ToString();
             BlindTurn = bmap.Attributes.Contains("BT");
             MotionWarning = bmap.Attributes.Contains("MW");
             FourKey = bmap.Attributes.Contains("4K");

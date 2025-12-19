@@ -1,14 +1,54 @@
-﻿using System;
+﻿using CustomBeatmaps.UI.OSUEditMode;
+using CustomBeatmaps.Util;
+using HarmonyLib;
+using Rhythm;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-//using CustomBeatmaps.UI.OSUEditMode;
-using CustomBeatmaps.Util;
-using HarmonyLib;
-using Rhythm;
 using UnityEngine;
+using static UnityEngine.UI.ContentSizeFitter;
 using Object = UnityEngine.Object;
+
+namespace CustomBeatmaps.Patches
+{
+    public static class OsuEditorPatch
+    {
+        public static Rhythm.RhythmController _rhythmController;
+
+        [HarmonyPatch(typeof(Rhythm.RhythmController), "Awake")]
+        [HarmonyPrefix]
+        private static void RhythmControllerInit(Rhythm.RhythmController __instance)
+        {
+            _rhythmController = __instance;
+
+            if (true)
+            {
+                // Clear previous filewatcher
+                //if (_fileWatcher != null)
+                //{
+                //    _fileWatcher.Dispose();
+                //    _fileWatcher = null;
+                //}
+
+                // Add OSU UI
+                new GameObject().AddComponent<OSUEditUIBehaviour>();
+
+                // Watch our file for changes/hot swap
+                //_fileWatcher = FileWatchHelper.WatchFile(_editPath, () =>
+                //{
+                //    if (AutoReload)
+                //    {
+                //        ScheduleHelper.SafeInvoke(HotReloadBeatmap);
+                //    }
+                //});
+            }
+        }
+    }
+}
+   
+
 /*
 namespace CustomBeatmaps.Patches
 {

@@ -7,6 +7,7 @@ using CustomBeatmaps.UI;
 using CustomBeatmaps.Util;
 using CustomBeatmaps.Util.CustomData;
 using HarmonyLib;
+using Rhythm;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -120,13 +121,15 @@ namespace CustomBeatmaps
             // Harmony Patching
             Type[] classesToPatch = {
                 typeof(DebugLogPatch),
-                //typeof(OsuEditorPatch),
+                typeof(OsuEditorPatch),
                 typeof(OneLifeModePatch),
                 typeof(FlipModePatch),
                 typeof(DisableRewiredMouseInputPatch),
                 typeof(ArcadeOverridesPatch),
                 //typeof(AudioPatch),
                 typeof(ChaboButtonPatch),
+                typeof(LongPathPatch),
+                typeof(HighScorePatch)
             };
             foreach (var toPatch in classesToPatch)
             {
@@ -169,6 +172,9 @@ namespace CustomBeatmaps
 
             CanGetTexture = true;
             ScheduleHelper.SafeInvoke(() => PackageHelper.GetAllCustomSongs.ForEach(s => s.GetTexture()));
+            var songName = "test";
+            if (PackageHelper.TryGetSong(songName, out var song))
+            { }
         }
 
         private static bool _quitted;

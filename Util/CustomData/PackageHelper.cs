@@ -276,6 +276,14 @@ namespace CustomBeatmaps.Util.CustomData
             }
         }
 
+        public static bool TryGetSong(string name, out Song song)
+        {
+            song = GetAllCustomSongs.FirstOrDefault(s => s.name == name);
+            if (song != null)
+                return true;
+            return false;
+        }
+
         public static int EstimatePackageCount(string folderPath)
         {
             return Directory.GetDirectories(folderPath).Length + Directory.GetFiles(folderPath).Length;

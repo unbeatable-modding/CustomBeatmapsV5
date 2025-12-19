@@ -1,7 +1,7 @@
 ﻿using System;
 using CustomBeatmaps.UISystem;
 using UnityEngine;
-/*
+
 namespace CustomBeatmaps.UI.OSUEditMode
 {
     public class OSUEditUIBehaviour : MonoBehaviour
@@ -11,8 +11,7 @@ namespace CustomBeatmaps.UI.OSUEditMode
         private void OnGUI()
         {
             Reacc.SetStore(_store);
-            OSUEditUI.Render();
+            //OSUEditUI.Render();
         }
     }
 }
-*/

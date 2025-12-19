@@ -1,11 +1,13 @@
 ﻿using System;
 using CustomBeatmaps.Patches;
+using Rhythm;
 using UnityEngine;
-/*
+
 namespace CustomBeatmaps.UI.OSUEditMode
 {
     public static class OSUEditUI
     {
+        private static RhythmController _controller => OsuEditorPatch._rhythmController;
         public static void Render()
         {
             int w = 64;
@@ -13,20 +15,22 @@ namespace CustomBeatmaps.UI.OSUEditMode
             int p = 8;
             GUILayout.Window(0, new Rect(p, Screen.height - h - p, w, h), id =>
             {
-                OsuEditorPatch.AutoReload = GUILayout.Toggle(OsuEditorPatch.AutoReload, "Auto Reload");
+                //OsuEditorPatch.AutoReload = GUILayout.Toggle(OsuEditorPatch.AutoReload, "Auto Reload");
                 GUILayout.Label("Space: Pause");
                 GUILayout.Label("R: Reload");
             }, "Tools");
-            float total = OsuEditorPatch.SongTotalMS;
-            float progress = total > 0? (OsuEditorPatch.SongTimeMS / total) : -1;
-            RenderTimer(OsuEditorPatch.SongTimeMS, progress);
+            float total = _controller.endAtTimeStamp;
+            float progress = _controller.songTracker.TimelinePosition;
+            //float total = OsuEditorPatch.SongTotalMS;
+            //float progress = total > 0? (OsuEditorPatch.SongTimeMS / total) : -1;
+            RenderTimer((int)total * 1000, progress);
         }
 
-        private static void RenderTimer(int totalMS, float progressBarProgress=-1)
+        private static void RenderTimer(float totalMS, float progressBarProgress=-1)
         {
-            int ms = totalMS % 1000;
-            int seconds = (totalMS / 1000) % 60;
-            int minutes = (totalMS / (1000 * 60));
+            //int ms = totalMS % 1000;
+            //int seconds = (totalMS / 1000) % 60;
+            //int minutes = (totalMS / (1000 * 60));
 
             int w = (Screen.width / 3);
             int h = Math.Min(w / 2, 64);
@@ -35,7 +39,8 @@ namespace CustomBeatmaps.UI.OSUEditMode
             var centeredStyle = new GUIStyle(originalLabelStyle);
             centeredStyle.alignment = TextAnchor.MiddleRight;
             var r = new Rect(Screen.width - w - p, Screen.height - h - p, w, h);
-            var t = $"<b>{minutes:00}:{seconds:00}:{ms:0000}</b>";
+            //var t = $"<b>{minutes:00}:{seconds:00}:{ms:0000}</b>";
+            var t = $"<b>{progressBarProgress} - {totalMS}</b>";
             GUI.Label(new Rect(r.position + Vector2.right * 3, r.size), $"<color=black><size={h + 3}>{t}</size></color>", centeredStyle);
             GUI.Label(r, $"<size={h}>{t}</size>", centeredStyle);
             GUI.skin.label = originalLabelStyle;
@@ -50,4 +55,3 @@ namespace CustomBeatmaps.UI.OSUEditMode
         }
     }
 }
-*/

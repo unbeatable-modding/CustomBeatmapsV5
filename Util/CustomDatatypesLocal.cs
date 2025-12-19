@@ -53,6 +53,8 @@ namespace CustomBeatmaps.Util
 
         //public Dictionary<string, bool> Attributes;
         public HashSet<string> Attributes;
+
+        public int PreviewTime;
     }
 
     

@@ -145,6 +145,8 @@ namespace CustomBeatmaps.CustomData
                     .Invoke(Song, new object[] { bmap.DirectoryPath });
             AccessTools.PropertySetter(typeof(Song), nameof(Song.CustomAudioFile))
                     .Invoke(Song, new object[] { bmap.AudioPath });
+
+            Traverse.Field("previewStartTime").SetValue(bmap.Tags.PreviewTime);
             //Traverse.Method("set_IsCustomSong").Field("value").SetValue(true);
             //Traverse.Property("set_CustomPath").Field("value").SetValue(bmap.DirectoryPath);
             //Traverse.Property("set_CustomAudioFile").Field("value").SetValue(bmap.AudioPath);
