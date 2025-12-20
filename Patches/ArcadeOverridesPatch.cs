@@ -75,7 +75,7 @@ namespace CustomBeatmaps.Patches
 	            IL_0073: brfalse.s IL_007c
              */
 
-            var codeMatcher = new CodeMatcher(instructions);
+            //var codeMatcher = new CodeMatcher(instructions);
             for (int i = 0; i < code.Count - 11; i++)
             {
                 // if ((Application.isEditor || Environment.GetCommandLineArgs().Contains("-customsongs")) && Directory.Exists(Path.Combine(Application.persistentDataPath, "CustomSongs")))
@@ -102,8 +102,6 @@ namespace CustomBeatmaps.Patches
                 {
                     startIndex = i;
                     endIndex = i + 11;
-                    if (code[i + 1].Branches(out var label))
-                        CustomBeatmaps.Log.LogWarning($"TESTING {label != null}");
                 }
 
             }

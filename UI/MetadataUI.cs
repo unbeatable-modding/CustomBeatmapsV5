@@ -71,7 +71,7 @@ namespace CustomBeatmaps.UI
                     bmap.Tags.Attributes.Add("MW");
                 if (FourKey)
                     bmap.Tags.Attributes.Add("4K");
-                BeatmapHelper.SetBeatmapJson(bmap.BeatmapPointer.text, bmap.Tags, $"{bmap.DirectoryPath}/{bmap.BeatmapPath}");
+                BeatmapHelper.SetBeatmapJson(bmap.BeatmapPointer.text, bmap.Tags, bmap.BeatmapPath);
             }
         }
 

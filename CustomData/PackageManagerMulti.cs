@@ -64,7 +64,7 @@ namespace CustomBeatmaps.CustomData
                     InitialLoadState.Loading = false;
                 }
 
-                ArcadeHelper.LoadCustomSongs();
+                ArcadeHelper.ReloadArcadeList();
                 ScheduleHelper.SafeInvoke(() => Songs.ForEach(s => s.Song.GetTexture()));
 
             }).Start();

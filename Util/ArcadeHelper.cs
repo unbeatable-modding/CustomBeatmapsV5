@@ -74,7 +74,7 @@ namespace CustomBeatmaps.Util
         {
             while (LoadingArcade) { Thread.Sleep(200); }
             LoadingArcade = true;
-            LoadCustomSongs();
+            //LoadCustomSongs();
             if (SceneManager.GetActiveScene().name != "ArcadeModeMenu")
             {
                 LoadingArcade = false;
@@ -85,63 +85,8 @@ namespace CustomBeatmaps.Util
             var _songDatabase = arcade.Field("_songDatabase").GetValue<Dictionary<string, ArcadeSongDatabase.BeatmapItem>>();
             _songDatabase.Clear();
             arcade.Method("LoadDatabase").GetValue();
-            arcade.Method("RefreshSongList").GetValue(true);
+            arcade.Method("RefreshSongList", [false]).GetValue();
             LoadingArcade = false;
-        }
-
-        private static bool _loadingSongs = false;
-        public static void LoadCustomSongs()
-        {
-            return;
-            // Weird logic to not freak out when called multiple times in quick succession
-            while (_loadingSongs) { Thread.Sleep(200); }
-            
-            _loadingSongs = true;
-
-            var killList = songs.Where(s => s is CustomSong).Select(s => s.name);
-
-            // Make clones
-            var songsTmp = songs.ToList();
-            var _visibleSongsTmp = _visibleSongs.ToList();
-            var _songsTmp = new Dictionary<string, Song>(_songs.AsEnumerable());
-            var songNamesTmp = songNames.ToList();
-
-            foreach (string k in killList)
-            {
-                songsTmp.Remove(_songsTmp[k]);
-                _visibleSongsTmp.Remove(_songsTmp[k]);
-                _songsTmp.Remove(k);
-                songNamesTmp.Remove(k);
-            }
-
-            
-            var fetch = PackageHelper.GetAllCustomSongs.ToList();
-            lock (fetch)
-            {
-                foreach (Song s in fetch)
-                {
-                    //CustomBeatmaps.Log.LogDebug($"{s.name}");
-
-                    if (!_songsTmp.ContainsKey(s.name))
-                    {
-                        songsTmp.Add(s);
-                        _songsTmp.Add(s.name, s);
-                        _visibleSongsTmp.Add(s);
-                        songNamesTmp.Add(s.name);
-                        //_categorySongs[s.Category].Add(s);
-                    }
-                }
-                Task.Run(() =>
-                {
-                    traverse.Field("songs").SetValue(songsTmp);
-                    traverse.Field("_songs").SetValue(_songsTmp);
-                    traverse.Field("_visibleSongs").SetValue(_visibleSongsTmp);
-                    traverse.Field("songNames").SetValue(songNamesTmp);
-
-                    _loadingSongs = false;
-                });
-                
-            } 
         }
 
         public static ArcadeSongDatabase SongDatabase => ArcadeSongDatabase.Instance;

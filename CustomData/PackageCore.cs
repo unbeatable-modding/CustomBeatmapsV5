@@ -13,7 +13,7 @@ namespace CustomBeatmaps.CustomData
         
         public Guid GUID;
 
-        public List<SortedDictionary<InternalDifficulty, string>> Songs;
+        public List<SortedDictionary<InternalDifficulty, string>> Songs; // terrible
     }
     
     public enum InternalDifficulty

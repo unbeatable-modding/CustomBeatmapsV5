@@ -70,6 +70,8 @@ namespace CustomBeatmaps.CustomData
         /// </summary>
         public string FlavorText => Tags.FlavorText;
 
+        public int PreviewTime { get; private set; } = 0;
+
         public HashSet<string> Attributes
         {
             get
@@ -141,13 +143,14 @@ namespace CustomBeatmaps.CustomData
         /// <summary>
         /// BeatmapData from Local *.bmap files
         /// </summary>
-        public BeatmapData(Guid guid, int offset, InternalDifficulty internalDifficulty, string bmapPath, CCategory category)
+        public BeatmapData(Guid guid, int offset, InternalDifficulty internalDifficulty, string bmapPath, CCategory category, int previewTime = 0)
         {
             BeatmapPath = bmapPath;
             Category = category;
             DirectoryPath = Path.GetDirectoryName(bmapPath);
             GUID = guid;
             Offset = offset;
+            PreviewTime = previewTime;
             //InternalName = $"CUSTOM__{Category.InternalCategory}__{internalName}";
 
             string[] difficultyIndex = ["Beginner", "Easy", "Normal", "Hard", "UNBEATABLE", "Star"];
@@ -246,9 +249,10 @@ namespace CustomBeatmaps.CustomData
     public class CustomBeatmap : CustomBeatmapInfo
     {
         public BeatmapData Data { get; private set; }
-
-        public CustomBeatmap(BeatmapData bmap, TextAsset textAsset, string difficulty) : base(bmap.BeatmapPath, difficulty)
+        public override string text => textAsset.text; // conflict of interest (also fixes saving metadata)
+        public CustomBeatmap(BeatmapData bmap, TextAsset _textAsset, string difficulty) : base(bmap.BeatmapPath, difficulty)
         {
+            textAsset = _textAsset;
             Data = bmap;
         }
     }

@@ -9,6 +9,8 @@ namespace CustomBeatmaps
     /// </summary>
     public class ModConfig
     {
+        // NOTE TO SELF: fix the configs fucked up auto generation
+        
         // :sunglasses:
         public bool DarkMode = true;
         /// <summary>
@@ -18,7 +20,7 @@ namespace CustomBeatmaps
         /// <summary>
         /// Directory for server/downloaded packages
         /// </summary>
-        public string ServerPackagesDir = TryFindWhiteLabel("CustomBeatmapsV3-Data/SERVER_PACKAGES", out var dir) ? dir : "CustomBeatmapsV4-Data/SERVER_PACKAGES";
+        public string ServerPackagesDir = TryFindOtherGame("CustomBeatmapsV3-Data/SERVER_PACKAGES", out var dir) ? dir : "CustomBeatmapsV4-Data/SERVER_PACKAGES";
         /// <summary>
         /// Songs directory for your OSU install for the mod to access 
         /// </summary>& test
@@ -34,7 +36,7 @@ namespace CustomBeatmaps
         /// <summary>
         /// The local user "key" for high score submissions
         /// </summary>
-        public string UserUniqueIdFile = TryFindWhiteLabel("CustomBeatmapsV3-Data/.USER_ID", out var file) ? file : "CustomBeatmapsV4-Data/.USER_ID";
+        public string UserUniqueIdFile = TryFindOtherGame("CustomBeatmapsV3-Data/.USER_ID", out var file) ? file : "CustomBeatmapsV4-Data/.USER_ID";
         /// <summary>
         /// A line separated list of all beatmaps we've tried playing
         /// </summary>
@@ -44,15 +46,23 @@ namespace CustomBeatmaps
 
         /// <param name="path"> Path relative to White Label directory </param>
         /// <param name="getDir"> Directory (if it exists) </param>
-        private static bool TryFindWhiteLabel(string path, out string getDir)
+        private static bool TryFindOtherGame(string path, out string getDir)
         {
             var test = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/'));
             var dataDir = test.Substring(0, test.LastIndexOf('/'));
             // Get the directory of the custom songs
-            getDir = $"{dataDir}/UNBEATABLE [white label]/{path}";
-            if (Directory.Exists(getDir) || File.Exists(getDir))
+            string[] gameDirs = [
+                $"{dataDir}/UNBEATABLE [white label]/{path}",
+                $"{dataDir}/UNBEATABLE Demo/{path}"
+                ];
+            
+            foreach (string dir in gameDirs)
             {
-                return true;
+                if (Directory.Exists(dir) || File.Exists(dir))
+                {
+                    getDir = dir;
+                    return true;
+                }
             }
             getDir = null;
             return false;
@@ -61,7 +71,7 @@ namespace CustomBeatmaps
         private static string[] MakeUserPackagesDir()
         {
             List<string> array = ["USER_PACKAGES"];
-            if (TryFindWhiteLabel("USER_PACKAGES", out var dir))
+            if (TryFindOtherGame("USER_PACKAGES", out var dir))
                 array.Add(dir);
             return array.ToArray();
         }

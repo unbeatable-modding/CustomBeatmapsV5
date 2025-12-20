@@ -172,9 +172,6 @@ namespace CustomBeatmaps
 
             CanGetTexture = true;
             ScheduleHelper.SafeInvoke(() => PackageHelper.GetAllCustomSongs.ForEach(s => s.GetTexture()));
-            var songName = "test";
-            if (PackageHelper.TryGetSong(songName, out var song))
-            { }
         }
 
         private static bool _quitted;

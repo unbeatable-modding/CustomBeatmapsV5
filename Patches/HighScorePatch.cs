@@ -10,16 +10,17 @@ namespace CustomBeatmaps.Patches
 {
     public static class HighScorePatch
     {
+        // the notes are for me i need them
+        // good luck comprehending random viewer :)
         [HarmonyPatch(typeof(HighScoreScreenArcade), "OnScoreScreenUpdated")]
         [HarmonyTranspiler]
-        [HarmonyDebug]
         public static IEnumerable<CodeInstruction> ScoreScreenTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
         {
             var code = new List<CodeInstruction>(instructions);
 
             bool foundBeatmapParse = false, foundCustomArt = false;
             int beatmapParseIndex = -1, customArtIndex = -1;
-            Label endOfCoverIfStatementLabel = il.DefineLabel();
+            Label endOfCoverIfStatementLabel = il.DefineLabel(); // Labels are points in the code you can jump to
 
             // adds "Pri.LongPath.File.ReadAllText(string)"
             var instructionsToReadBeatmapFile = new List<CodeInstruction>
@@ -27,7 +28,7 @@ namespace CustomBeatmaps.Patches
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Pri.LongPath.File), nameof(Pri.LongPath.File.ReadAllText), new Type[] { typeof(string) })),
             };
 
-            // adds if "(PackageHelper.TryGetSong(songName out var song))"
+            // adds "if (PackageHelper.TryGetSong(songName out var song))"
             var instructionsToInsertForCover = new List<CodeInstruction>
             {
                 new CodeInstruction(OpCodes.Ldloc_S, 7),

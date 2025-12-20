@@ -267,7 +267,7 @@ namespace CustomBeatmaps.UISystem
                 if (_selectedBeatmap.SongPath != null)
                 {
                     var previewsong = SongDatabase.GetBeatmapItemByPath(_selectedBeatmap.SongPath);
-                    BGM.PlaySongPreview(previewsong);
+                    BGM.PlaySongPreview(previewsong, _selectedBeatmap.Tags.PreviewTime);
                 }
             }
         }

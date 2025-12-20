@@ -19,6 +19,14 @@ namespace CustomBeatmaps.Patches
             return false;
         }
 
+        [HarmonyPatch(typeof(CustomBeatmapInfo), "DifficultyFilename", MethodType.Getter)]
+        [HarmonyPrefix]
+        public static bool diffPatch(ref string __result, CustomBeatmapInfo __instance)
+        {
+            __result = Pri.LongPath.Path.GetFileName(__instance.FilePath);
+            return false;
+        }
+
         // NOTE: there are more of these i need to do
     }
 }
