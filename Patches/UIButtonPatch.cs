@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CustomBeatmaps.Patches
 {
-    public class ChaboButtonPatch
+    public class UIButtonPatch
     {
         public static GameObject testobj;
         private static CustomBeatmapsUIBehaviour _customBeatmapsUIBehaviour;
@@ -59,6 +59,7 @@ namespace CustomBeatmaps.Patches
             }
         }
 
+        /*
         [HarmonyPatch(typeof(ArcadeBGMManager), "OnSelectedSongChanged")]
         [HarmonyPrefix]
         static bool DontChangeSongsForUI()
@@ -83,6 +84,6 @@ namespace CustomBeatmaps.Patches
             }
             return true;
         }
-
+        */
     }
 }

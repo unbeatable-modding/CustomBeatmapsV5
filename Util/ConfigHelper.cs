@@ -21,6 +21,7 @@ namespace CustomBeatmaps.Util
             };
             LoadedConfigs.Add(Path.GetFullPath(filePath), reload);
             // Listen for file changes
+            
             FileWatchHelper.WatchFileForModifications(filePath, () =>
             {
                 lock (FilesChanged)
@@ -28,6 +29,7 @@ namespace CustomBeatmaps.Util
                     FilesChanged.Add(Path.GetFullPath(filePath));
                 }
             });
+            
             reload.Invoke();
         }
 

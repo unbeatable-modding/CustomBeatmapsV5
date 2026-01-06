@@ -32,7 +32,8 @@ namespace CustomBeatmaps.CustomData
 
         protected CCategory _category;
 
-        protected FileSystemWatcher _watcher;
+        //protected FileSystemWatcher _watcher;
+        protected HashSet<FileSystemWatcher> _watchers = new();
 
         public InitialLoadStateData InitialLoadState { get; protected set; } = new InitialLoadStateData();
 
@@ -101,15 +102,19 @@ namespace CustomBeatmaps.CustomData
             }
 
             // Clear previous watcher
-            if (_watcher != null)
+            if (_watchers.Any())//(_watcher != null)
             {
-                _watcher.Dispose();
+                foreach (FileSystemWatcher w in _watchers)
+                    w.Dispose();
+                _watchers.Clear();
+                //_watcher.Dispose();
             }
 
             GenerateCorePackages();
 
             // Watch for changes
-            _watcher = FileWatchHelper.WatchFolder(folder, true, OnFileChange);
+            _watchers.Add(FileWatchHelper.WatchFolder(folder, false, OnFileChange));
+            //_watcher = FileWatchHelper.WatchFolder(folder, true, OnFileChange);
             // Reload now
             ReloadAll();
         }
@@ -152,6 +157,47 @@ namespace CustomBeatmaps.CustomData
             }
         }
 
+        // stupid problems require stupider solutions
+        public virtual void TryImmortalizeBeatmap(string dir)
+        {
+            if (!_downloadedFolders.Contains(dir))
+                return;
+            theImmortalOne = FileWatchHelper.WatchFolder(dir, true, OnFileChange);
+            _watchers.Add(theImmortalOne);
+        }
 
+        private FileSystemWatcher theImmortalOne;
+
+        public virtual void KillAllWatchers()
+        {
+            foreach (FileSystemWatcher w in _watchers)
+            {
+                if (w != theImmortalOne)
+                    w.Dispose();
+            }
+                
+            _watchers.Clear();
+            _watchers.Add(theImmortalOne);
+        }
+
+        public virtual void WaitNoBringThemBack()
+        {
+            if (_folder == null) // ???
+                return;
+
+            // kill the immortal
+            if (theImmortalOne != null)
+            {
+                theImmortalOne.Dispose();
+                theImmortalOne = null;
+                _watchers.Clear();
+            }
+
+            _watchers.Add(FileWatchHelper.WatchFolder(_folder, false, OnFileChange));
+            foreach (string dir in _downloadedFolders)
+            {
+                _watchers.Add(FileWatchHelper.WatchFolder(dir, true, OnFileChange));
+            }
+        }
     }
 }

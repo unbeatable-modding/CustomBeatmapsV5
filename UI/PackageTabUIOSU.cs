@@ -27,12 +27,12 @@ namespace CustomBeatmaps.UI
                         MetadataUI.Render(_selectedBeatmap);
                         if (GUILayout.Button($"Init OSU Packages"))
                         {
-                            CustomBeatmaps.OSUSongManager.GenerateCorePackages();
+                            CustomBeatmaps.LocalOSUPackages.GenerateCorePackages();
                             //CustomBeatmaps.LocalServerPackages.GenerateCorePackages();
                         }
                         if (GUILayout.Button($"Init ALL Packages"))
                         {
-                            CustomBeatmaps.OSUSongManager.GenerateCorePackages();
+                            CustomBeatmaps.LocalOSUPackages.GenerateCorePackages();
                             CustomBeatmaps.LocalServerPackages.GenerateCorePackages();
                             CustomBeatmaps.LocalUserPackages.GenerateCorePackages();
                         }
@@ -64,6 +64,7 @@ namespace CustomBeatmaps.UI
 
         protected override void RunSong()
         {
+            //Manager.ImmortalizeBeatmap(_selectedBeatmap.di);
             ArcadeHelper.PlaySongEdit(_selectedBeatmap, _overrideCountdown);
         }
 

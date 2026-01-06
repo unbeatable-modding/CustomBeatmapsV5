@@ -254,7 +254,7 @@ namespace CustomBeatmaps.Util.CustomData
                 songl.AddRange(CustomBeatmaps.LocalUserPackages.Songs);
                 songl.AddRange(CustomBeatmaps.LocalServerPackages.Songs);
                 //songl.AddRange(CustomBeatmaps.LocalSubmissionPackages.Songs);
-                songl.AddRange(CustomBeatmaps.OSUSongManager.Songs);
+                songl.AddRange(CustomBeatmaps.LocalOSUPackages.Songs);
                 return songl;
             }
         }
@@ -271,7 +271,7 @@ namespace CustomBeatmaps.Util.CustomData
                 songl.AddRange(CustomBeatmaps.LocalUserPackages.Songs.Where(s => s.Local).Select(s => s.Song));
                 songl.AddRange(CustomBeatmaps.LocalServerPackages.Songs.Where(s => s.Local).Select(s => s.Song));
                 //songl.AddRange(CustomBeatmaps.LocalSubmissionPackages.Songs.Where(s => s.Local).Select(s => s.Song));
-                songl.AddRange(CustomBeatmaps.OSUSongManager.Songs.Where(s => s.Local).Select(s => s.Song));
+                songl.AddRange(CustomBeatmaps.LocalOSUPackages.Songs.Where(s => s.Local).Select(s => s.Song));
                 return songl;
             }
         }

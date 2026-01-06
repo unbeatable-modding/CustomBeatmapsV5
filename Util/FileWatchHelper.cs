@@ -49,7 +49,7 @@ namespace CustomBeatmaps.Util
                                NotifyFilters.FileName
                                | NotifyFilters.LastWrite,
                 EnableRaisingEvents = true,
-                Filter = "*",
+                Filter = "*.*",
                 IncludeSubdirectories = recursive
             };
 

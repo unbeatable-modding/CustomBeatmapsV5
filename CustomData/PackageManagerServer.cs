@@ -37,6 +37,11 @@ namespace CustomBeatmaps.CustomData
                     ScheduleHelper.SafeLog($"RELOADING ALL PACKAGES FROM {_folder}");
 
                     _packages.Clear();
+                    lock (_watchers)
+                    {
+                        KillAllWatchers();
+                        _watchers.Add(FileWatchHelper.WatchFolder(_folder, false, OnFileChange));
+                    }
                     // Don't fetch for beta update
                     _onlinePackages = new(); // Online not finished :(
                     //_onlinePackages = PackageServerHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
@@ -54,6 +59,7 @@ namespace CustomBeatmaps.CustomData
                             if (package.DownloadStatus != BeatmapDownloadStatus.Downloaded)
                                 continue;
                             _downloadedFolders.Add(Path.GetFullPath(package.BaseDirectory));
+                            _watchers.Add(FileWatchHelper.WatchFolder(package.BaseDirectory, true, OnFileChange));
                         }
                     }
                     InitialLoadState.Loading = false;
@@ -161,6 +167,8 @@ namespace CustomBeatmaps.CustomData
                         _packages.RemoveAt(toRemove);
                         lock (_downloadedFolders)
                             _downloadedFolders.Remove(folderPath);
+                        lock (_watchers)
+                            _watchers.Remove(FileWatchHelper.WatchFolder(folderPath, true, OnFileChange));
 
                         if (OnlinePackages.Exists(o => o.GUID == p.GUID) &&
                             PackageServerHelper.TryLoadOnlineServerPackage(OnlinePackages.First(o => o.GUID == p.GUID), out var package, _category, _onLoadException))

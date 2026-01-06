@@ -1,4 +1,5 @@
 ﻿using Arcade.UI.SongSelect;
+using CustomBeatmaps.CustomData;
 using CustomBeatmaps.Util;
 using CustomBeatmaps.Util.CustomData;
 using FMODUnity;
@@ -7,9 +8,12 @@ using Rhythm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
+using TMPro;
 using UnityEngine;
 using static Rhythm.BeatmapIndex;
+using static Rhythm.RhythmController;
 
 namespace CustomBeatmaps.Patches
 {
@@ -118,5 +122,79 @@ namespace CustomBeatmaps.Patches
 
             return code;
         }
+
+        [HarmonyPatch(typeof(ArcadeSongInfos), "SongInfosStringChanged")]
+        [HarmonyPostfix]
+        public static void ShowCustomInfo(string value, ref TextMeshProUGUI ___songInfos, ArcadeSongDatabase.BeatmapItem ___song)
+        {
+            ___songInfos.text = value;
+            if (___song != null && ___song.CustomSong && (((CustomBeatmap)___song.BeatmapInfo).Data.Attributes.Count > 0))
+            {
+                ___songInfos.text += "\n\n";
+                ___songInfos.text += "Attributes:";
+                TextMeshProUGUI textMeshProUGUI = ___songInfos;
+                textMeshProUGUI.text = textMeshProUGUI.text + "\n" + string.Join(", ", ((CustomBeatmap)___song.BeatmapInfo).Data.Attributes);
+            }
+        }
+
+        [HarmonyPatch(typeof(ArcadeSongInfos), "SongInfosStringSelectedChanged")]
+        [HarmonyPostfix]
+        public static void ShowCustomSelectedInfo(string value, ref TextMeshProUGUI ___songInfosSelected, ArcadeSongDatabase.BeatmapItem ___song)
+        {
+            ___songInfosSelected.text = value;
+            if (___song != null && ___song.CustomSong && (((CustomBeatmap)___song.BeatmapInfo).Data.Attributes.Count > 0))
+            {
+                ___songInfosSelected.text += "\n\n";
+                ___songInfosSelected.text += "<b>Attributes:</b>";
+                TextMeshProUGUI textMeshProUGUI = ___songInfosSelected;
+                textMeshProUGUI.text = textMeshProUGUI.text + " " + string.Join(", ", ((CustomBeatmap)___song.BeatmapInfo).Data.Attributes);
+            }
+        }
+
+        [HarmonyPatch(typeof(LevelManager), "LoadCustomArcadeLevel")]
+        [HarmonyPrefix]
+        public static void SaveMyBoy(Song song)
+        {
+            if (song is CustomSong cusSong)
+            {
+                CustomBeatmaps.LocalServerPackages.TryImmortalizeBeatmap(cusSong.Data.DirectoryPath);
+                CustomBeatmaps.LocalUserPackages.TryImmortalizeBeatmap(cusSong.Data.DirectoryPath);
+                CustomBeatmaps.LocalOSUPackages.TryImmortalizeBeatmap(cusSong.Data.DirectoryPath);
+            }
+        }
+
+        [HarmonyPatch(typeof(LevelManager), "LoadArcadeLevel")]
+        [HarmonyPatch(typeof(LevelManager), "LoadCustomArcadeLevel")]
+        [HarmonyPostfix]
+        public static void WatcherMassacare()
+        {
+            CustomBeatmaps.LocalServerPackages.KillAllWatchers();
+            CustomBeatmaps.LocalUserPackages.KillAllWatchers();
+            CustomBeatmaps.LocalOSUPackages.KillAllWatchers();
+            murdered = true;
+        }
+
+        private static bool murdered = false;
+
+        [HarmonyPatch(typeof(LevelManager), "LoadLevel", new Type[] { typeof(string), typeof(int), typeof(bool), typeof(bool) })]
+        [HarmonyPatch(typeof(ArcadeProgression), "Finish")]
+        [HarmonyPatch(typeof(ArcadeProgression), "Back")]
+        [HarmonyPostfix]
+        public static void WatcherNecromancy(object[] __args, MethodBase __originalMethod)
+        {
+            if (__originalMethod.Name == "LoadLevel")
+            {
+                if ((string)__args[0] != JeffBezosController.arcadeMenuScene)
+                    return;
+            }
+            if (!murdered)
+                return;
+            CustomBeatmaps.LocalServerPackages.WaitNoBringThemBack();
+            CustomBeatmaps.LocalUserPackages.WaitNoBringThemBack();
+            CustomBeatmaps.LocalOSUPackages.WaitNoBringThemBack();
+            murdered = false;
+        }
+
+
     }
 }

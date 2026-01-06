@@ -23,8 +23,6 @@ namespace CustomBeatmaps.CustomData
 
         private string[] _folders = [];
 
-        private FileSystemWatcher[] _watchers = [];
-
         public override void ReloadAll()
         {
             if (!_folders.Any())
@@ -45,6 +43,12 @@ namespace CustomBeatmaps.CustomData
                     ScheduleHelper.SafeLog($"RELOADING ALL PACKAGES FROM {_folders[0]}");
 
                     _packages.Clear();
+                    lock (_watchers)
+                    {
+                        KillAllWatchers();
+                        foreach (string main in _folders)
+                            _watchers.Add(FileWatchHelper.WatchFolder(main, false, OnFileChange));
+                    }
                     var packages = PackageHelper.LoadLocalPackagesMulti(_folders, _category, loadedPackage =>
                     {
                         InitialLoadState.Loaded++;
@@ -59,6 +63,8 @@ namespace CustomBeatmaps.CustomData
                         foreach (var package in _packages)
                         {
                             _downloadedFolders.Add(Path.GetFullPath(package.BaseDirectory));
+                            lock (_watchers)
+                                _watchers.Add(FileWatchHelper.WatchFolder(package.BaseDirectory, true, OnFileChange));
                         }
                     }
                     InitialLoadState.Loading = false;
@@ -147,6 +153,8 @@ namespace CustomBeatmaps.CustomData
                     {
                         _downloadedFolders.Remove(folderPath);
                     }
+                    lock (_watchers)
+                        _watchers.Remove(FileWatchHelper.WatchFolder(folderPath, true, OnFileChange));
 
                     ScheduleHelper.SafeLog($"REMOVED PACKAGE: {folderPath}");
                     PackageUpdated?.Invoke();
@@ -178,7 +186,7 @@ namespace CustomBeatmaps.CustomData
             // Clear previous watchers
             foreach (var w in _watchers)
                 w.Dispose();
-            _watchers = [];
+            _watchers.Clear();
 
             folders.First(f => true);
 
@@ -195,11 +203,8 @@ namespace CustomBeatmaps.CustomData
             GenerateCorePackages();
 
             // Watch for changes
-            _watchers = new FileSystemWatcher[_folders.Length];
-            for (var i = 0; i < _folders.Length; i++)
-            {
-                _watchers[i] = FileWatchHelper.WatchFolder(_folders[i], true, OnFileChange);
-            }
+            foreach (string f in folders)
+                _watchers.Add(FileWatchHelper.WatchFolder(f, true, OnFileChange));
 
             ReloadAll();
         }
@@ -262,13 +267,25 @@ namespace CustomBeatmaps.CustomData
         {
             //if (_folders != null)
             //    return;
-
+            //CustomBeatmaps.Log.LogWarning($"FOLDERS: {_folders}");
+            //ScheduleHelper.SafeLog($"FOLDERS: {string.Join(", ", _folders)}");
             ScheduleHelper.SafeLog($"LOADING CORES");
+            foreach (string f in _folders)
+            {
+                lock (_packages)
+                {
+                    Task.Run(async () =>
+                    {
+                        await PackageHelper.PopulatePackageCores(f);
+                    }).Wait();
+                }
+            }
+            /*
             for (var i = 0; i < _folders.Length; i++)
             {
 
-                if (Directory.Exists(_folders[i]))
-                {
+                //if (Directory.Exists(_folders[i]))
+                //{
                     lock (_packages)
                     {
                         Task.Run(async () =>
@@ -276,9 +293,23 @@ namespace CustomBeatmaps.CustomData
                             await PackageHelper.PopulatePackageCores(_folders[i]);
                         }).Wait();
                     }
-                }
+                //}
             }    
+            */
         }
 
+        public override void WaitNoBringThemBack()
+        {
+            if (_folders == null) // ???
+                return;
+
+            foreach (string main in _folders)
+                _watchers.Add(FileWatchHelper.WatchFolder(main, false, OnFileChange));
+
+            foreach (string dir in _downloadedFolders)
+            {
+                _watchers.Add(FileWatchHelper.WatchFolder(dir, true, OnFileChange));
+            }
+        }
     }
 }

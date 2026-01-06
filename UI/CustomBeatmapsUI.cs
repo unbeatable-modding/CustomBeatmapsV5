@@ -11,7 +11,7 @@ namespace CustomBeatmaps.UI
     {
         private static PackageTabUIOnline OnlinePackageList = new PackageTabUIOnline(CustomBeatmaps.LocalServerPackages);
         private static PackageTabUILocal LocalPackageList = new PackageTabUILocal(CustomBeatmaps.LocalUserPackages);
-        private static PackageTabUIOSU OsuPackageList = new PackageTabUIOSU(CustomBeatmaps.OSUSongManager);
+        private static PackageTabUIOSU OsuPackageList = new PackageTabUIOSU(CustomBeatmaps.LocalOSUPackages);
         //private static PackageTabUISubmission SubmissionPackageList = new PackageTabUISubmission(CustomBeatmaps.LocalSubmissionPackages);
 
         public static void Render()

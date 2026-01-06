@@ -30,8 +30,13 @@ namespace CustomBeatmaps.CustomData
                     InitialLoadState.Loaded = 0;
                     InitialLoadState.Total = PackageHelper.EstimatePackageCount(_folder);
                     ScheduleHelper.SafeLog($"RELOADING ALL PACKAGES FROM {_folder}");
-
+                    
                     _packages.Clear();
+                    lock (_watchers)
+                    {
+                        KillAllWatchers();
+                        _watchers.Add(FileWatchHelper.WatchFolder(_folder, false, OnFileChange));
+                    }
                     var packages = PackageHelper.LoadLocalPackages(_folder, _category, loadedPackage =>
                     {
                         InitialLoadState.Loaded++;
@@ -44,6 +49,8 @@ namespace CustomBeatmaps.CustomData
                         foreach (var package in _packages)
                         {
                             _downloadedFolders.Add(Path.GetFullPath(package.BaseDirectory));
+                            lock (_watchers)
+                                _watchers.Add(FileWatchHelper.WatchFolder(package.BaseDirectory, true, OnFileChange));
                         }
                     }
                     InitialLoadState.Loading = false;
@@ -79,7 +86,7 @@ namespace CustomBeatmaps.CustomData
                 
 
             // Weird fix for also getting the top folder
-            List<string> dirs = Directory.EnumerateDirectories(folderPath, "*", SearchOption.AllDirectories).ToList();
+            List<string> dirs = Directory.EnumerateDirectories(folderPath, "*.*", SearchOption.AllDirectories).ToList();
             dirs.Add(folderPath);
 
             foreach (string subDir in dirs)
@@ -121,6 +128,8 @@ namespace CustomBeatmaps.CustomData
                     {
                         _downloadedFolders.Remove(fullPath);
                     }
+                    lock (_watchers)
+                        _watchers.Remove(FileWatchHelper.WatchFolder(fullPath, true, OnFileChange));
 
                     ScheduleHelper.SafeLog($"REMOVED PACKAGE: {fullPath}");
                     PackageUpdated?.Invoke();
