@@ -145,7 +145,7 @@ namespace CustomBeatmaps.Util.CustomData
             //ScheduleHelper.SafeLog("step A");
 
             // Folders = packages
-            foreach (string subDir in Directory.EnumerateDirectories(folderPath, "*", SearchOption.AllDirectories))
+            foreach (string subDir in Directory.EnumerateDirectories(folderPath, "*.*", SearchOption.AllDirectories))
             {
                 try
                 {
@@ -301,8 +301,8 @@ namespace CustomBeatmaps.Util.CustomData
             pkgCore.Songs = new();
 
             var subFiles = recursive ?
-                Directory.EnumerateFiles(folderPath, "*.osu", SearchOption.AllDirectories) :
-                Directory.EnumerateFiles(folderPath, "*.osu", SearchOption.TopDirectoryOnly);
+                Directory.EnumerateFiles(folderPath, "*.osu", SearchOption.AllDirectories).Concat(Directory.EnumerateFiles(folderPath, "*.txt", SearchOption.AllDirectories)) :
+                Directory.EnumerateFiles(folderPath, "*.osu", SearchOption.TopDirectoryOnly).Concat(Directory.EnumerateFiles(folderPath, "*.txt", SearchOption.TopDirectoryOnly));
 
             var songs = new List<string>();
             
@@ -371,7 +371,9 @@ namespace CustomBeatmaps.Util.CustomData
         public static bool TryPopulatePackageCore(string packageFolder, string outerFolderPath, bool recursive = false)
         {
             packageFolder = Path.GetFullPath(packageFolder);
-            if (!Directory.EnumerateFiles(packageFolder, "*.osu", SearchOption.TopDirectoryOnly).Any() || Directory.EnumerateFiles(packageFolder, "*.bmap", SearchOption.TopDirectoryOnly).Any())
+            if (!Directory.EnumerateFiles(packageFolder, "*.osu", SearchOption.TopDirectoryOnly).Any() &&
+                !Directory.EnumerateFiles(packageFolder, "*.txt", SearchOption.TopDirectoryOnly).Any() ||
+                Directory.EnumerateFiles(packageFolder, "*.bmap", SearchOption.TopDirectoryOnly).Any())
                 return false;
 
             try

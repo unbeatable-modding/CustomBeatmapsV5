@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Arcade.UI;
 
 using File = Pri.LongPath.File;
+using System.IO;
 
 namespace CustomBeatmaps.Util.CustomData
 {
@@ -16,6 +17,18 @@ namespace CustomBeatmaps.Util.CustomData
                 return match.Groups[1].Value;
             }
             throw new BeatmapException($"{prop} property not found.", beatmapPath);
+        }
+
+        public static bool TryGetBeatmapProp(string beatmapText, string prop, string beatmapPath, out string value)
+        {
+            value = null;
+            var match = Regex.Match(beatmapText, $"{prop}: *(.+?)\r?\n");
+            if (match.Groups.Count > 1)
+            {
+                value = match.Groups[1].Value;
+                return true;
+            }
+            return false;
         }
 
         public static string GetBeatmapImage(string beatmapText, string beatmapPath)
@@ -39,6 +52,18 @@ namespace CustomBeatmaps.Util.CustomData
             var beatmapSave = SerializeHelper.SerializeJSON(data);
             var match = Regex.Replace(beatmapText, $"(?<=Tags:)(.+?)\r?\n", beatmapSave + "\r\n");
             File.WriteAllText(beatmapPath, match);
+        }
+
+        public static bool TrySetBeatmapProp(ref StreamWriter sw, string beatmapText, string prop, string value)
+        {
+            var match = Regex.Match(beatmapText, $"(?<={prop}:)(.*?)\r?\n");
+            if (!match.Success)
+                return false;
+
+            var save = Regex.Replace(beatmapText, $"(?<={prop}:)(.*?)\r?\n", $"{match.Groups[1].Value}{value}\r\n");
+            //File.WriteAllText(beatmapPath, save);
+            sw.Write(save);
+            return true;
         }
     }
 }

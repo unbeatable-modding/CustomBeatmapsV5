@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using Rhythm;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using UnityEngine;
 using static CustomBeatmaps.Util.CustomData.BeatmapHelper;
 using static Rhythm.BeatmapIndex;
@@ -195,7 +197,12 @@ namespace CustomBeatmaps.CustomData
         {
             try
             {
-                var text = File.ReadAllText(BeatmapPath);
+                var stream = File.Open(BeatmapPath, FileMode.Open, FileAccess.ReadWrite);
+                var sr = new StreamReader(stream);
+                var sw = new StreamWriter(stream);
+
+                var text = sr.ReadToEnd();
+                stream.Position = 0;
 
                 SongName = GetBeatmapProp(text, "TitleUnicode", BeatmapPath);
                 
@@ -213,18 +220,30 @@ namespace CustomBeatmaps.CustomData
                 //AudioPath = $"{DirectoryPath}\\{realPath}";
                 AudioPath = $"{realPath}";
 
-                var tagTest = GetBeatmapProp(text, "Tags", BeatmapPath);
-                if (tagTest.StartsWith("{") && tagTest.EndsWith("}"))
+                if (TryGetBeatmapProp(text, "Tags", BeatmapPath, out var tags))
                 {
                     try
                     {
-                        Tags = JsonConvert.DeserializeObject<TagData>(tagTest);
+                        if (tags.StartsWith("{") && tags.EndsWith("}"))
+                            Tags = JsonConvert.DeserializeObject<TagData>(tags);
                     }
                     catch (Exception)
                     {
                         ScheduleHelper.SafeLog("INVALID TAG JSON");
                     }
                 }
+                else
+                {
+                    stream.Close();
+                    ScheduleHelper.SafeLog("NO TAG!");
+
+                    if (!TrySetBeatmapProp(ref sw, text, "Source", $"\r\nTags:"))
+                        TrySetBeatmapProp(ref sw, text, "Version", $"\r\nTags:");
+                }
+                
+                sw.Flush();
+                sr.Close();
+                stream.Close();
 
                 BeatmapPointer = new CustomBeatmap(this, new TextAsset(text), InternalDifficulty);
             }
