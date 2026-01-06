@@ -1,14 +1,17 @@
-﻿using System.Linq;
-using CustomBeatmaps.CustomData;
+﻿using CustomBeatmaps.CustomData;
 using CustomBeatmaps.UI.PackageList;
 using CustomBeatmaps.UISystem;
 using CustomBeatmaps.Util;
+using HarmonyLib;
+using System.Linq;
 using UnityEngine;
 
 namespace CustomBeatmaps.UI
 {
     public class PackageTabUILocal : AbstractPackageTab<CustomPackageLocal>
     {
+        protected override string Folder => string.Join(" & ", ((PackageManagerMulti)Manager).Folders);
+
         public PackageTabUILocal(PackageManagerMulti pkgManager) : base(pkgManager)
         {
 

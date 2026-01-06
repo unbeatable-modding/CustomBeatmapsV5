@@ -23,6 +23,8 @@ namespace CustomBeatmaps.CustomData
 
         private string[] _folders = [];
 
+        public string[] Folders => _folders;
+
         public override void ReloadAll()
         {
             if (!_folders.Any())

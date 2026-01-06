@@ -21,7 +21,7 @@ namespace CustomBeatmaps.UISystem
         /// List of Packages rendered by the UI
         /// </summary>
         protected List<P> _pkgHeaders = new();
-        protected string Folder => Manager.Folder;
+        protected virtual string Folder => Manager.Folder;
         protected InitialLoadStateData LoadState => Manager.InitialLoadState;
 
         protected int _selectedPackageIndex = 0;
