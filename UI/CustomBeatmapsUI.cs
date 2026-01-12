@@ -11,7 +11,7 @@ namespace CustomBeatmaps.UI
     {
         private static PackageTabUIOnline OnlinePackageList = new PackageTabUIOnline(CustomBeatmaps.LocalServerPackages);
         private static PackageTabUILocal LocalPackageList = new PackageTabUILocal(CustomBeatmaps.LocalUserPackages);
-        private static PackageTabUIOSU OsuPackageList = new PackageTabUIOSU(CustomBeatmaps.LocalOSUPackages);
+        private static PackageTabUIEditor OsuPackageList = new PackageTabUIEditor(CustomBeatmaps.LocalEditorPackages);
         //private static PackageTabUISubmission SubmissionPackageList = new PackageTabUISubmission(CustomBeatmaps.LocalSubmissionPackages);
 
         public static void Render()
@@ -69,7 +69,7 @@ namespace CustomBeatmaps.UI
                     SubmissionPackageListUI.Render(() => RenderListTop(tab, setTab));
                     break;
                     */
-                    case Tab.Osu:
+                    case Tab.Edit:
                         OsuPackageList.Render(() => RenderListTop(tab, setTab));
                         //OSUPackageList.Render(() => RenderListTop(tab, setTab));
                         break;
@@ -134,8 +134,8 @@ namespace CustomBeatmaps.UI
                         return $"Submissions <b>x {p.SubmissionPackages.Count}!</b>";
                     return "Submissions";
                     */
-                    case Tab.Osu:
-                        return "OSU!";
+                    case Tab.Edit:
+                        return "Editor";
                     default:
                         throw new ArgumentOutOfRangeException(nameof(tabName), tabName, null);
                 }

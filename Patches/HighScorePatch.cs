@@ -124,9 +124,9 @@ namespace CustomBeatmaps.Patches
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Rhythm.MetadataInfo), nameof(Rhythm.MetadataInfo.GetDifficulty))),
                 
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(Dictionary<string, BeatmapInfo>), "Item")),
-                new CodeInstruction(OpCodes.Castclass, typeof(CustomBeatmap)),
-                new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(CustomBeatmap), nameof(CustomBeatmap.Data))),
-                new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(BeatmapData), nameof(CustomBeatmap.Data.Attributes))),
+                new CodeInstruction(OpCodes.Castclass, typeof(ModdedBeatmapInfo)),
+                new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(ModdedBeatmapInfo), nameof(ModdedBeatmapInfo.Data))),
+                new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(BeatmapData), nameof(ModdedBeatmapInfo.Data.Attributes))),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(HashSet<string>), nameof(HashSet<string>.Count) )),
                 new CodeInstruction(OpCodes.Ldc_I4_0),
                 new CodeInstruction(OpCodes.Cgt),
@@ -366,13 +366,13 @@ namespace CustomBeatmaps.Patches
         public static void DummyMethod()
         {
             Beatmap beatmap = new ();
-            if (song.IsCustomSong && ((CustomBeatmap)song.Beatmaps[beatmap.metadata.GetDifficulty(JeffBezosController.rhythmProgression.GetDifficulty())]).Data.Attributes.Count > 0)
+            if (song.IsCustomSong && ((ModdedBeatmapInfo)song.Beatmaps[beatmap.metadata.GetDifficulty(JeffBezosController.rhythmProgression.GetDifficulty())]).Data.Attributes.Count > 0)
             {
                 songInfosText.text += "\n\n";
                 songInfosText.text += "<b>Attributes:</b>";
                 TextMeshProUGUI textMeshProUGUI2 = songInfosText;
                 textMeshProUGUI2.text = textMeshProUGUI2.text + " " + 
-                    string.Join(", ", ((CustomBeatmap)song.Beatmaps[beatmap.metadata.GetDifficulty(JeffBezosController.rhythmProgression.GetDifficulty())]).Data.Attributes);
+                    string.Join(", ", ((ModdedBeatmapInfo)song.Beatmaps[beatmap.metadata.GetDifficulty(JeffBezosController.rhythmProgression.GetDifficulty())]).Data.Attributes);
             }
 
         }

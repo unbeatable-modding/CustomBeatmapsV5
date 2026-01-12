@@ -128,12 +128,12 @@ namespace CustomBeatmaps.Patches
         public static void ShowCustomInfo(string value, ref TextMeshProUGUI ___songInfos, ArcadeSongDatabase.BeatmapItem ___song)
         {
             ___songInfos.text = value;
-            if (___song != null && ___song.CustomSong && (((CustomBeatmap)___song.BeatmapInfo).Data.Attributes.Count > 0))
+            if (___song != null && ___song.CustomSong && (((ModdedBeatmapInfo)___song.BeatmapInfo).Data.Attributes.Count > 0))
             {
                 ___songInfos.text += "\n\n";
                 ___songInfos.text += "Attributes:";
                 TextMeshProUGUI textMeshProUGUI = ___songInfos;
-                textMeshProUGUI.text = textMeshProUGUI.text + "\n" + string.Join(", ", ((CustomBeatmap)___song.BeatmapInfo).Data.Attributes);
+                textMeshProUGUI.text = textMeshProUGUI.text + "\n" + string.Join(", ", ((ModdedBeatmapInfo)___song.BeatmapInfo).Data.Attributes);
             }
         }
 
@@ -142,12 +142,12 @@ namespace CustomBeatmaps.Patches
         public static void ShowCustomSelectedInfo(string value, ref TextMeshProUGUI ___songInfosSelected, ArcadeSongDatabase.BeatmapItem ___song)
         {
             ___songInfosSelected.text = value;
-            if (___song != null && ___song.CustomSong && (((CustomBeatmap)___song.BeatmapInfo).Data.Attributes.Count > 0))
+            if (___song != null && ___song.CustomSong && (((ModdedBeatmapInfo)___song.BeatmapInfo).Data.Attributes.Count > 0))
             {
                 ___songInfosSelected.text += "\n\n";
                 ___songInfosSelected.text += "<b>Attributes:</b>";
                 TextMeshProUGUI textMeshProUGUI = ___songInfosSelected;
-                textMeshProUGUI.text = textMeshProUGUI.text + " " + string.Join(", ", ((CustomBeatmap)___song.BeatmapInfo).Data.Attributes);
+                textMeshProUGUI.text = textMeshProUGUI.text + " " + string.Join(", ", ((ModdedBeatmapInfo)___song.BeatmapInfo).Data.Attributes);
             }
         }
 
@@ -159,7 +159,7 @@ namespace CustomBeatmaps.Patches
             {
                 CustomBeatmaps.LocalServerPackages.TryImmortalizeBeatmap(cusSong.Data.DirectoryPath);
                 CustomBeatmaps.LocalUserPackages.TryImmortalizeBeatmap(cusSong.Data.DirectoryPath);
-                CustomBeatmaps.LocalOSUPackages.TryImmortalizeBeatmap(cusSong.Data.DirectoryPath);
+                CustomBeatmaps.LocalEditorPackages.TryImmortalizeBeatmap(cusSong.Data.DirectoryPath);
             }
         }
 
@@ -170,7 +170,7 @@ namespace CustomBeatmaps.Patches
         {
             CustomBeatmaps.LocalServerPackages.KillAllWatchers();
             CustomBeatmaps.LocalUserPackages.KillAllWatchers();
-            CustomBeatmaps.LocalOSUPackages.KillAllWatchers();
+            CustomBeatmaps.LocalEditorPackages.KillAllWatchers();
             murdered = true;
         }
 
@@ -191,7 +191,7 @@ namespace CustomBeatmaps.Patches
                 return;
             CustomBeatmaps.LocalServerPackages.WaitNoBringThemBack();
             CustomBeatmaps.LocalUserPackages.WaitNoBringThemBack();
-            CustomBeatmaps.LocalOSUPackages.WaitNoBringThemBack();
+            CustomBeatmaps.LocalEditorPackages.WaitNoBringThemBack();
             murdered = false;
         }
 

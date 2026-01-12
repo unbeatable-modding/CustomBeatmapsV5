@@ -38,7 +38,7 @@ namespace CustomBeatmaps
         public static PackageManagerServer LocalServerPackages { get; private set; }
         // TODO: MAKE WORK
         //public static PackageManagerSubmission LocalSubmissionPackages { get; private set; }
-        public static PackageManagerLocal LocalOSUPackages { get; private set; }
+        public static PackageManagerLocal LocalEditorPackages { get; private set; }
         public static PlayedPackageManager PlayedPackageManager { get; private set; }
         public static ServerHighScoreManager ServerHighScoreManager { get; private set; }
         public static BeatmapDownloader Downloader { get; private set; }
@@ -64,7 +64,7 @@ namespace CustomBeatmaps
             LocalServerPackages = new PackageManagerServer(OnError);
             //LocalSubmissionPackages = new PackageManagerSubmission(OnError);
             //SubmissionPackageManager = new SubmissionPackageManager(OnError);
-            LocalOSUPackages = new PackageManagerLocal(OnError);
+            LocalEditorPackages = new PackageManagerLocal(OnError);
             ServerHighScoreManager = new ServerHighScoreManager();
 
             if (!Directory.Exists("CustomBeatmapsV4-Data"))
@@ -82,7 +82,7 @@ namespace CustomBeatmaps
                 LocalUserPackages.SetFolders(config.UserPackagesDir, new CCategory(6));
                 LocalServerPackages.SetFolder(config.ServerPackagesDir, new CCategory(9));
                 //LocalSubmissionPackages.SetFolder(config.TemporarySubmissionPackageFolder, new CCategory(8));
-                LocalOSUPackages.SetFolder(config.OsuSongsOverrideDirectory, new CCategory(8));
+                LocalEditorPackages.SetFolder(config.OsuSongsOverrideDirectory, new CCategory(8));
                 PlayedPackageManager = new PlayedPackageManager(config.PlayedBeatmapList);
             });
             ConfigHelper.LoadConfig("CustomBeatmapsV4-Data/custombeatmaps_backend.json", () => new BackendConfig(), config => BackendConfig = config);

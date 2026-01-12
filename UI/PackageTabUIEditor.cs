@@ -7,10 +7,10 @@ using UnityEngine;
 
 namespace CustomBeatmaps.UI
 {
-    public class PackageTabUIOSU : AbstractPackageTab<CustomPackageLocal>
+    public class PackageTabUIEditor : AbstractPackageTab<CustomPackageLocal>
     {
         private static bool _overrideCountdown = true;
-        public PackageTabUIOSU(PackageManagerLocal pkgManager) : base(pkgManager)
+        public PackageTabUIEditor(PackageManagerLocal pkgManager) : base(pkgManager)
         {
             RightRenders = [
                 () =>
@@ -25,14 +25,14 @@ namespace CustomBeatmaps.UI
                                        "3) While testing, the beatmap should automatically reload when you make changes and save in OSU"
                             );
                         MetadataUI.Render(_selectedBeatmap);
-                        if (GUILayout.Button($"Init OSU Packages"))
+                        if (GUILayout.Button($"Init Editor Packages"))
                         {
-                            CustomBeatmaps.LocalOSUPackages.GenerateCorePackages();
+                            CustomBeatmaps.LocalEditorPackages.GenerateCorePackages();
                             //CustomBeatmaps.LocalServerPackages.GenerateCorePackages();
                         }
                         if (GUILayout.Button($"Init ALL Packages"))
                         {
-                            CustomBeatmaps.LocalOSUPackages.GenerateCorePackages();
+                            CustomBeatmaps.LocalEditorPackages.GenerateCorePackages();
                             CustomBeatmaps.LocalServerPackages.GenerateCorePackages();
                             CustomBeatmaps.LocalUserPackages.GenerateCorePackages();
                         }

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using static CustomBeatmaps.Util.TEMPOnlineHelper;
 using Directory = Pri.LongPath.Directory;
 using Path = Pri.LongPath.Path;
 
@@ -14,8 +15,8 @@ namespace CustomBeatmaps.CustomData
 {
     public class PackageManagerServer : PackageManagerGeneric<CustomPackageServer>
     {
-        protected List<OnlinePackage> _onlinePackages = new();
-        public List<OnlinePackage> OnlinePackages => _onlinePackages;
+        protected List<TEMPOnlinePackage> _onlinePackages = new();
+        public List<TEMPOnlinePackage> OnlinePackages => _onlinePackages;
         protected virtual string onlinePkgSource => CustomBeatmaps.BackendConfig.ServerPackageList;
 
         public PackageManagerServer(Action<BeatmapException> onLoadException) : base(onLoadException)
@@ -43,9 +44,10 @@ namespace CustomBeatmaps.CustomData
                         _watchers.Add(FileWatchHelper.WatchFolder(_folder, false, OnFileChange));
                     }
                     // Don't fetch for beta update
-                    _onlinePackages = new(); // Online not finished :(
-                    //_onlinePackages = PackageServerHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
-                    var packages = PackageServerHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
+                    //_onlinePackages = new(); // Online not finished :(
+                    _onlinePackages = TEMPOnlineHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
+                    //var packages = PackageServerHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
+                    var packages = TEMPOnlineHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
                     {
                         InitialLoadState.Loaded++;
                     }, _onLoadException).ToList();
@@ -59,7 +61,8 @@ namespace CustomBeatmaps.CustomData
                             if (package.DownloadStatus != BeatmapDownloadStatus.Downloaded)
                                 continue;
                             _downloadedFolders.Add(Path.GetFullPath(package.BaseDirectory));
-                            _watchers.Add(FileWatchHelper.WatchFolder(package.BaseDirectory, true, OnFileChange));
+                            lock (_watchers)
+                                _watchers.Add(FileWatchHelper.WatchFolder(package.BaseDirectory, true, OnFileChange));
                         }
                     }
                     InitialLoadState.Loading = false;
@@ -78,6 +81,11 @@ namespace CustomBeatmaps.CustomData
             }).Start();
         }
 
+        public void UpdatePackageTest(string folderPath)
+        {
+            UpdatePackage(folderPath);
+        }
+
         protected override void UpdatePackage(string folderPath)
         {
             try
@@ -88,7 +96,7 @@ namespace CustomBeatmaps.CustomData
                     var toRemove = _packages.FirstOrDefault(p => p.BaseDirectory == folderPath);
                     if (toRemove != null)
                     {
-                        RemovePackage(toRemove);
+                        RemovePackage(folderPath);
                     }
                 }
 
@@ -106,22 +114,33 @@ namespace CustomBeatmaps.CustomData
 
                 foreach (string subDir in dirs)
                 {
-                    if (PackageServerHelper.TryLoadLocalServerPackage(subDir, _folder, out CustomPackageServer package, _category, false,
-                    _onLoadException, () => { return Packages.Where(p => p.DownloadStatus == BeatmapDownloadStatus.Downloaded).ToDictionary(p => p.GUID); } ))
+                    //if (PackageServerHelper.TryLoadLocalServerPackage(subDir, _folder, out CustomPackageServer package, _category, false,
+                    //_onLoadException, () => { return Packages.Where(p => p.DownloadStatus == BeatmapDownloadStatus.Downloaded).ToDictionary(p => p.GUID); } ))
+                    if (TEMPOnlineHelper.TryLoadLocalServerPackage(subDir, _folder, out CustomPackageServer package, _category, false,
+                    _onLoadException, () => { return Packages.Where(p => p.DownloadStatus == BeatmapDownloadStatus.Downloaded).ToDictionary(p =>
+                    {
+                        if (p.ServerURL != null)
+                            return p.ServerURL;
+                        return p.BaseDirectory;
+                    }); }))
                     {
                         ScheduleHelper.SafeInvoke(() => package.SongDatas.ForEach(s => s.Song.GetTexture()));
                         ScheduleHelper.SafeLog($"UPDATING PACKAGE: {subDir}");
                         lock (_packages)
                         {
-                            
+
                             // Use online data if we can find it
-                            if (OnlinePackages.Any(o => o.GUID == package.GUID))
+                            //if (OnlinePackages.Any(o => o.GUID == package.GUID))
+                            if (OnlinePackages.Any(o => package.BaseDirectory.Contains(o.FilePath.Substring("packages/".Length))))
                             {
-                                var opkg = OnlinePackages.First(o => o.GUID == package.GUID);
-                                package.ServerURL = opkg.ServerURL;
+                                //var opkg = OnlinePackages.First(o => o.GUID == package.GUID);
+                                var opkg = OnlinePackages.First(o => package.BaseDirectory.Contains(o.FilePath.Substring("packages/".Length)));
+                                //package.ServerURL = opkg.ServerURL;
+                                package.ServerURL = opkg.FilePath;
                                 package.Time = opkg.UploadTime;
 
-                                var toReplace = _packages.FindIndex(o => o.GUID == package.GUID);
+                                //var toReplace = _packages.FindIndex(o => o.GUID == package.GUID);
+                                var toReplace = _packages.FindIndex(o => o.ServerURL == package.ServerURL);
                                 _packages[toReplace] = package;
                             }
                             // Add like normal otherwise
@@ -156,65 +175,35 @@ namespace CustomBeatmaps.CustomData
 
         protected override void RemovePackage(string folderPath)
         {
-            try
-            {
-                lock (_packages)
-                {
-                    int toRemove = _packages.FindIndex(check => check.BaseDirectory == folderPath);
-                    if (toRemove != -1)
-                    {
-                        var p = _packages[toRemove];
-                        _packages.RemoveAt(toRemove);
-                        lock (_downloadedFolders)
-                            _downloadedFolders.Remove(folderPath);
-                        lock (_watchers)
-                            _watchers.Remove(FileWatchHelper.WatchFolder(folderPath, true, OnFileChange));
-
-                        if (OnlinePackages.Exists(o => o.GUID == p.GUID) &&
-                            PackageServerHelper.TryLoadOnlineServerPackage(OnlinePackages.First(o => o.GUID == p.GUID), out var package, _category, _onLoadException))
-                        {
-                            _packages.Add(package);
-                        }
-
-                        ScheduleHelper.SafeLog($"REMOVED PACKAGE: {folderPath}");
-                        PackageUpdated?.Invoke();
-                        ScheduleHelper.SafeInvoke(() => ArcadeHelper.ReloadArcadeList());
-                    }
-                    else
-                    {
-                        ScheduleHelper.SafeLog($"CANNOT find package to remove: {folderPath}");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                CustomBeatmaps.Log.LogError(e);
-            } 
-        }
-
-        protected void RemovePackage(CustomPackageServer pkg)
-        {
             lock (_packages)
             {
-                if (_packages.Exists(check => check.BaseDirectory == pkg.BaseDirectory))
+                string fullPath = Path.GetFullPath(folderPath);
+                int toRemove = _packages.FindIndex(check => check.BaseDirectory == fullPath);
+                if (toRemove != -1)
                 {
-                    _packages.Remove(pkg);
+                    var p = _packages[toRemove];
+                    _packages.RemoveAt(toRemove);
                     lock (_downloadedFolders)
-                        _downloadedFolders.Remove(pkg.BaseDirectory);
+                        _downloadedFolders.Remove(folderPath);
+                    //lock (_watchers)
+                    //    _watchers.Remove(FileWatchHelper.WatchFolder(fullPath, true, OnFileChange));
 
-                    if (OnlinePackages.Exists(o => o.GUID == pkg.GUID) &&
-                        PackageServerHelper.TryLoadOnlineServerPackage(OnlinePackages.First(o => o.GUID == pkg.GUID), out var package, _category, _onLoadException))
+                    //if (OnlinePackages.Exists(o => o.GUID == p.GUID) &&
+                    //    PackageServerHelper.TryLoadOnlineServerPackage(OnlinePackages.First(o => o.GUID == p.GUID), out var package, _category, _onLoadException))
+                    if (OnlinePackages.Exists(o => o.FilePath == p.ServerURL) &&
+                        TEMPOnlineHelper.TryLoadOnlineServerPackage(OnlinePackages.First(o => o.FilePath == p.ServerURL),
+                        out var package, _category, _onLoadException))
                     {
                         _packages.Add(package);
                     }
 
+                    ScheduleHelper.SafeLog($"REMOVED PACKAGE: {folderPath}");
                     PackageUpdated?.Invoke();
                     ScheduleHelper.SafeInvoke(() => ArcadeHelper.ReloadArcadeList());
                 }
                 else
                 {
-                    // ???
-                    ScheduleHelper.SafeLog($"Package doesn't exist???: {pkg.BaseDirectory}");
+                    ScheduleHelper.SafeLog($"CANNOT find package to remove: {folderPath}");
                 }
             }
         }
@@ -233,6 +222,22 @@ namespace CustomBeatmaps.CustomData
             string changedFilePath = Path.GetFullPath(evt.FullPath);
             // The root folder within the packages folder we consider to be a "package"
             string basePackageFolder = Path.GetFullPath(Path.Combine(_folder, StupidMissingTypesHelper.GetPathRoot(changedFilePath.Substring(_folder.Length + 1))));
+
+            //
+            try
+            {
+                lock (_watchers)
+                {
+                    var w = _watchers.First(w => w.Path == basePackageFolder);
+                    w.Dispose();
+                    _watchers.Remove(w);
+                }
+            }
+            catch (Exception e)
+            {
+                CustomBeatmaps.Log.LogError(e);
+            }
+            //*/
 
             ScheduleHelper.SafeLog($"Base Package Folder IN SERVER: {basePackageFolder}");
 

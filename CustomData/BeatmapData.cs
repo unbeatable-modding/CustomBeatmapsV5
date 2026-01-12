@@ -1,12 +1,15 @@
-﻿using CustomBeatmaps.Util;
+﻿using CustomBeatmaps.UI;
+using CustomBeatmaps.Util;
 using Newtonsoft.Json;
 using Rhythm;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using static CustomBeatmaps.Util.CustomData.BeatmapHelper;
+using static CustomBeatmaps.Util.TEMPOnlineHelper;
 using static Rhythm.BeatmapIndex;
 using File = Pri.LongPath.File;
 using Path = Pri.LongPath.Path;
@@ -96,7 +99,7 @@ namespace CustomBeatmaps.CustomData
 
         public CCategory Category { get; private set; }
 
-        private int Offset = 0;
+        public int Offset = 0;
 
         // Stuff that currently only works locally but should work online later
 
@@ -126,7 +129,7 @@ namespace CustomBeatmaps.CustomData
         /// <summary>
         /// The actual Beatmap the game uses
         /// </summary>
-        public CustomBeatmap BeatmapPointer { get; private set; }
+        public ModdedBeatmapInfo BeatmapPointer { get; private set; }
 
         /// <summary>
         /// Points to the audio file associated with the beatmap
@@ -193,6 +196,45 @@ namespace CustomBeatmaps.CustomData
             IsLocal = false;
         }
 
+        /// <summary>
+        /// BeatmapData from Online Beatmaps
+        /// </summary>
+        public BeatmapData(TEMPOnlineBeatmap oBmap, Guid guid, int offset, CCategory category)
+        {
+            Category = category;
+            Offset = offset;
+
+            SongName = oBmap.SongName;
+            //InternalName = $"CUSTOM__{Category.InternalCategory}__{guid}-{Offset}";
+            GUID = guid;
+            Artist = oBmap.Artist;
+            Creator = oBmap.Creator;
+            Difficulty = oBmap.Difficulty;
+
+            InternalDifficulty = "Star"; // Default to Star difficulty
+            var bmapVer = oBmap.Difficulty.ToLower();
+            Dictionary<string, string> difficultyIndex = new Dictionary<string, string>
+                {
+                    {"beginner", "Beginner"},
+                    {"easy", "Beginner"}, // easy is a lie shove the song into normal
+                    {"normal", "Easy"},
+                    {"hard", "Normal"},
+                    {"expert", "Hard"},
+                    {"beatable", "Hard"}, // A lot of maps like using this idk
+                    {"unbeatable", "UNBEATABLE"}
+                };
+            foreach (var i in difficultyIndex.Keys.ToArray())
+            {
+                if (bmapVer.ToLower().StartsWith(i))
+                {
+                    InternalDifficulty = difficultyIndex[i];
+                    break;
+                }
+            }
+
+            IsLocal = false;
+        }
+
         private bool CreateLocalPackagedBeatmap()
         {
             try
@@ -234,7 +276,6 @@ namespace CustomBeatmaps.CustomData
                 }
                 else
                 {
-                    stream.Close();
                     ScheduleHelper.SafeLog("NO TAG!");
 
                     if (!TrySetBeatmapProp(ref sw, text, "Source", $"\r\nTags:"))
@@ -245,7 +286,7 @@ namespace CustomBeatmaps.CustomData
                 sr.Close();
                 stream.Close();
 
-                BeatmapPointer = new CustomBeatmap(this, new TextAsset(text), InternalDifficulty);
+                BeatmapPointer = new ModdedBeatmapInfo(this, new TextAsset(text), InternalDifficulty);
             }
             catch (Exception e)
             {
@@ -265,11 +306,11 @@ namespace CustomBeatmaps.CustomData
     /// <summary>
     /// Basicially a vanilla BeatmapInfo, but using a different class so it's easier to seperate
     /// </summary>
-    public class CustomBeatmap : CustomBeatmapInfo
+    public class ModdedBeatmapInfo : CustomBeatmapInfo
     {
         public BeatmapData Data { get; private set; }
         public override string text => textAsset.text; // conflict of interest (also fixes saving metadata)
-        public CustomBeatmap(BeatmapData bmap, TextAsset _textAsset, string difficulty) : base(bmap.BeatmapPath, difficulty)
+        public ModdedBeatmapInfo(BeatmapData bmap, TextAsset _textAsset, string difficulty) : base(bmap.BeatmapPath, difficulty)
         {
             textAsset = _textAsset;
             Data = bmap;

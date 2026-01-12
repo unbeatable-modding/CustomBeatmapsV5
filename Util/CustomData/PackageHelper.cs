@@ -22,7 +22,7 @@ namespace CustomBeatmaps.Util.CustomData
         public static readonly Category[] customCategories = {
             new Category("LOCAL", "Local songs", 7),
             new Category("submissions", "temp songs", 8),
-            new Category("osu", "click the circle", 9),
+            new Category("editor", "click the circle", 9),
             new Category("server", "online", 10)
             };
 
@@ -254,7 +254,7 @@ namespace CustomBeatmaps.Util.CustomData
                 songl.AddRange(CustomBeatmaps.LocalUserPackages.Songs);
                 songl.AddRange(CustomBeatmaps.LocalServerPackages.Songs);
                 //songl.AddRange(CustomBeatmaps.LocalSubmissionPackages.Songs);
-                songl.AddRange(CustomBeatmaps.LocalOSUPackages.Songs);
+                songl.AddRange(CustomBeatmaps.LocalEditorPackages.Songs);
                 return songl;
             }
         }
@@ -271,7 +271,7 @@ namespace CustomBeatmaps.Util.CustomData
                 songl.AddRange(CustomBeatmaps.LocalUserPackages.Songs.Where(s => s.Local).Select(s => s.Song));
                 songl.AddRange(CustomBeatmaps.LocalServerPackages.Songs.Where(s => s.Local).Select(s => s.Song));
                 //songl.AddRange(CustomBeatmaps.LocalSubmissionPackages.Songs.Where(s => s.Local).Select(s => s.Song));
-                songl.AddRange(CustomBeatmaps.LocalOSUPackages.Songs.Where(s => s.Local).Select(s => s.Song));
+                songl.AddRange(CustomBeatmaps.LocalEditorPackages.Songs.Where(s => s.Local).Select(s => s.Song));
                 return songl;
             }
         }
@@ -294,7 +294,7 @@ namespace CustomBeatmaps.Util.CustomData
         /// </summary>
         /// <param name="folderPath">Directory to generate package from</param>
         /// <param name="recursive">Bool to check recursively for beatmaps</param>
-        public static PackageCore GeneratePackageCore(string folderPath, bool recursive = true)
+        public static Task<PackageCore> GeneratePackageCore(string folderPath, bool recursive = true)
         {
             PackageCore pkgCore = new();
             pkgCore.GUID = Guid.NewGuid();
@@ -355,7 +355,7 @@ namespace CustomBeatmaps.Util.CustomData
                 
             }
 
-            return pkgCore;
+            return Task.FromResult(pkgCore);
         }
 
         public static async Task PopulatePackageCores(string folderPath)
@@ -364,11 +364,11 @@ namespace CustomBeatmaps.Util.CustomData
             folderPath = Path.GetFullPath(folderPath);
             foreach (string subDir in Directory.EnumerateDirectories(folderPath, "*.*", SearchOption.AllDirectories))
             {
-                TryPopulatePackageCore(subDir, folderPath);
+                await TryPopulatePackageCore(subDir, folderPath);
             }
         }
 
-        public static bool TryPopulatePackageCore(string packageFolder, string outerFolderPath, bool recursive = false)
+        public static async Task<bool> TryPopulatePackageCore(string packageFolder, string outerFolderPath, bool recursive = false)
         {
             packageFolder = Path.GetFullPath(packageFolder);
             if (!Directory.EnumerateFiles(packageFolder, "*.osu", SearchOption.TopDirectoryOnly).Any() &&
@@ -379,7 +379,7 @@ namespace CustomBeatmaps.Util.CustomData
             try
             {
                 //var relative = Path.GetFullPath(packageFolder).Substring(outerFolderPath.Length + 1);
-                var pkgCore = GeneratePackageCore(packageFolder, recursive);
+                var pkgCore = await GeneratePackageCore(packageFolder, recursive);
                 SerializeHelper.SaveJSON($"{packageFolder}\\package.bmap", pkgCore);
                 //return false;
             }

@@ -49,6 +49,7 @@ namespace CustomBeatmaps.Util
                     else
                     {
                         // We're done.
+                        process.Close();
                         return;
                     }
                 }

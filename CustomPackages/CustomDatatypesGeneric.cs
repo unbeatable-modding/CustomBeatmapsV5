@@ -71,7 +71,7 @@ namespace CustomBeatmaps.CustomPackages
         /// <summary>
         /// Here for redundancy, use BeatmapDatas unless this is 100% required
         /// </summary>
-        public virtual CustomBeatmap[] CustomBeatmaps => SongDatas.SelectMany(p => p.BeatmapInfos).ToArray();
+        public virtual ModdedBeatmapInfo[] CustomBeatmaps => SongDatas.SelectMany(p => p.BeatmapInfos).ToArray();
 
         public List<SongData> SongDatas;
         public abstract PackageType PkgType { get; }

@@ -1,47 +1,42 @@
 ﻿using CustomBeatmaps.CustomData;
 using CustomBeatmaps.CustomPackages;
-using HarmonyLib;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
-using Directory = Pri.LongPath.Directory;
-using File = Pri.LongPath.File;
-using Path = Pri.LongPath.Path;
 
-namespace CustomBeatmaps.Util.CustomData
+namespace CustomBeatmaps.Util
 {
-    public static class PackageServerHelper
+    public static class TEMPOnlineHelper
     {
-
-        public static CustomPackageServer[] LoadServerPackages(string folderPath, CCategory category, List<OnlinePackage> opkgs,
+        public static CustomPackageServer[] LoadServerPackages(string folderPath, CCategory category, List<TEMPOnlinePackage> opkgs,
             Action<CustomPackage> onLoadPackage = null, Action<BeatmapException> onBeatmapFail = null)
         {
-            /*  Intended order for reference:
-             *  1. Fetch all server packages and make them into a list
-             *  2. If we fail to fetch for any reason use steps 'b', otherwise proceed with steps 'a'
-             *  
-             *  a1. Turn server packages into local ones without any real Songs or Beatmaps
-             *  a2.
-             * 
-             */
             folderPath = Path.GetFullPath(folderPath);
 
-            var pkgs = new Dictionary<Guid, CustomPackageServer>();
-            Func<Dictionary<Guid, CustomPackageServer>> getPkgs = () => { return pkgs; };
+            var pkgs = new Dictionary<string, CustomPackageServer>();
+            Func<Dictionary<string, CustomPackageServer>> getPkgs = () => { return pkgs; };
 
 
             // Get online Packages first (if we can)
             ScheduleHelper.SafeLog("step A (Loading Online)");
             foreach (var opkg in opkgs)
             {
+                ScheduleHelper.SafeLog($"LOADING: {opkg.FilePath}");
                 if (TryLoadOnlineServerPackage(opkg, out var potentialNewPackage, category, onBeatmapFail, getPkgs))
                 {
-                    pkgs.TryAdd(potentialNewPackage.GUID, potentialNewPackage);
-                    onLoadPackage?.Invoke(potentialNewPackage);
+                    try
+                    {
+                        pkgs.TryAdd(potentialNewPackage.ServerURL.Substring("packages/".Length), potentialNewPackage);
+                        onLoadPackage?.Invoke(potentialNewPackage);
+                    }
+                    catch (Exception e)
+                    {
+                        CustomBeatmaps.Log.LogError(e);
+                    }
                 }
             }
 
@@ -52,19 +47,19 @@ namespace CustomBeatmaps.Util.CustomData
             {
                 if (TryLoadLocalServerPackage(subDir, folderPath, out CustomPackageServer potentialNewPackage, category, false, onBeatmapFail, getPkgs))
                 {
-                    pkgs.TryAdd(potentialNewPackage.GUID, potentialNewPackage);
+                    pkgs.TryAdd(potentialNewPackage.BaseDirectory, potentialNewPackage);
                     onLoadPackage?.Invoke(potentialNewPackage);
                 }
             }
 
             ScheduleHelper.SafeLog($"LOADED {pkgs.Count} PACKAGES");
-            ScheduleHelper.SafeLog($"####### FULL PACKAGES LIST: #######\n{pkgs.Values.Join(delimiter: "\n")}");
+            ScheduleHelper.SafeLog($"####### FULL PACKAGES LIST: #######\n{string.Join("\n", pkgs.Values)}");
 
             return pkgs.Values.ToArray();
         }
 
         public static bool TryLoadLocalServerPackage(string packageFolder, string outerFolderPath, out CustomPackageServer package, CCategory category, bool recursive = false,
-            Action<BeatmapException> onBeatmapFail = null, Func<Dictionary<Guid, CustomPackageServer>> getPkgs = null)
+            Action<BeatmapException> onBeatmapFail = null, Func<Dictionary<string, CustomPackageServer>> getPkgs = null)
         {
             package = new CustomPackageServer();
 
@@ -104,7 +99,7 @@ namespace CustomBeatmaps.Util.CustomData
                             foreach (var song in pkgCore.Songs[i])
                             {
                                 var bmapInfo = new BeatmapData(pkgCore.GUID, i, song.Key, $"{packageFolder}\\{song.Value}", category);
-                                
+
                                 if (songs.TryGetValue(bmapInfo.InternalName, out _))
                                 {
                                     if (!songs[bmapInfo.InternalName].TryAddToThisSong(bmapInfo))
@@ -120,7 +115,9 @@ namespace CustomBeatmaps.Util.CustomData
                         // We want to attach to an existing package (if we can)
                         if (getPkgs != null)
                         {
-                            if (getPkgs.Invoke().TryGetValue(pkgCore.GUID, out CustomPackageServer pkgFetch) && songs.Any())
+                            //if (getPkgs.Invoke().TryGetValue(package.BaseDirectory, out CustomPackageServer pkgFetch) && songs.Any())
+                            int lastSlash = package.BaseDirectory.LastIndexOf("\\", StringComparison.Ordinal);
+                            if (getPkgs.Invoke().TryGetValue(package.BaseDirectory.Substring(lastSlash+1), out CustomPackageServer pkgFetch) && songs.Any())
                             {
                                 pkgFetch.SongDatas = songs.Values.ToList();
                                 pkgFetch.DownloadStatus = BeatmapDownloadStatus.Downloaded;
@@ -129,7 +126,7 @@ namespace CustomBeatmaps.Util.CustomData
                                 return false;
                             }
                         }
-                        
+
 
                         // Set using core data if it exists
                         if (pkgCore.Name != null)
@@ -151,7 +148,7 @@ namespace CustomBeatmaps.Util.CustomData
                         ScheduleHelper.SafeInvoke(() => CustomBeatmaps.Log.LogError($"    Exception: {f}"));
                         onBeatmapFail?.Invoke(e);
                     }
-                    
+
                 }
 
             }
@@ -168,50 +165,56 @@ namespace CustomBeatmaps.Util.CustomData
             return false;
         }
 
-        public static bool TryLoadOnlineServerPackage(OnlinePackage oPkg, out CustomPackageServer package, CCategory category,
-            Action<BeatmapException> onBeatmapFail = null, Func<Dictionary<Guid, CustomPackageServer>> GUIDs = null)
+        public static bool TryLoadOnlineServerPackage(TEMPOnlinePackage oPkg, out CustomPackageServer package, CCategory category,
+    Action<BeatmapException> onBeatmapFail = null, Func<Dictionary<string, CustomPackageServer>> GUIDs = null)
         {
             package = new CustomPackageServer();
 
             // ???
-            if (GUIDs != null && GUIDs.Invoke().ContainsKey(oPkg.GUID))
+            if (GUIDs != null && GUIDs.Invoke().ContainsKey(oPkg.FilePath))
             {
                 package = new CustomPackageServer();
-                onBeatmapFail.Invoke(new BeatmapException("Online Package is Duplicate???", oPkg.ServerURL));
+                onBeatmapFail.Invoke(new BeatmapException("Online Package is Duplicate???", oPkg.FilePath));
                 return false;
             }
 
             var songs = new Dictionary<string, SongData>();
 
-            package.GUID = oPkg.GUID;
-            package.ServerURL = oPkg.ServerURL;
+            package.GUID = Guid.NewGuid();
+            package.ServerURL = oPkg.FilePath;
             //package.BaseDirectory = oPkg.ServerURL;
             package.Time = oPkg.UploadTime;
             package.DownloadStatus = BeatmapDownloadStatus.NotDownloaded;
 
-            for (var i = 0; i < oPkg.Songs.Length; i++)
+            var offset = 0;
+            foreach (var oBmap in oPkg.Beatmaps.Values)
             {
-                foreach (var s in oPkg.Songs[i])
+                var bmapInfo = new BeatmapData(oBmap, package.GUID, offset, category);
+                if (songs.TryGetValue(bmapInfo.InternalName, out var song))
                 {
-                    var bmapInfo = new BeatmapData(s, oPkg.GUID, i, category);
-                    if (songs.TryGetValue(bmapInfo.InternalName, out _))
+                    
+                    while (songs.TryGetValue(bmapInfo.InternalName, out song))
                     {
-                        if (!songs[bmapInfo.InternalName].TryAddToThisSong(bmapInfo))
-                            ScheduleHelper.SafeInvoke(() => CustomBeatmaps.Log.LogWarning($"FAILED TO ADD BEATMAP \"{bmapInfo.BeatmapPath}\" TO IT'S SONG"));
+                        if (!song.TryAddToThisSong(bmapInfo))
+                        {
+                            bmapInfo.Offset++;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    else
-                    {
+                    
+                    if (!songs.TryGetValue(bmapInfo.InternalName, out song))
                         songs.Add(bmapInfo.InternalName, new SongData(bmapInfo));
-                    }
+
+                    //ScheduleHelper.SafeInvoke(() => CustomBeatmaps.Log.LogWarning($"FAILED TO ADD BEATMAP \"{bmapInfo.BeatmapPath}\" TO IT'S SONG"));
+                }
+                else
+                {
+                    songs.Add(bmapInfo.InternalName, new SongData(bmapInfo));
                 }
             }
-
-            if (oPkg.Name != null)
-                package.Name = oPkg.Name;
-            if (oPkg.Mappers != null)
-                package.Mappers = oPkg.Mappers;
-            if (oPkg.Artists != null)
-                package.Artists = oPkg.Artists;
 
             // This folder has some beatmaps!
             if (songs.Any())
@@ -226,11 +229,12 @@ namespace CustomBeatmaps.Util.CustomData
             return false;
         }
 
-        public static async Task<OnlinePackage[]> FetchOnlinePackageList(string url)
+
+        public static async Task<TEMPOnlinePackage[]> FetchOnlinePackageList(string url)
         {
             try
             {
-                var pkgList = await FetchHelper.GetJSON<OnlinePackageList>(url);
+                var pkgList = await FetchHelper.GetJSON<TEMPOnlinePackageList>(url);
                 return pkgList.Packages;
             }
             catch
@@ -239,70 +243,35 @@ namespace CustomBeatmaps.Util.CustomData
             }
         }
 
-        private struct OnlinePackageList
+        private struct TEMPOnlinePackageList
         {
             [JsonProperty("packages")]
-            public OnlinePackage[] Packages;
+            public TEMPOnlinePackage[] Packages;
         }
 
-        /// <summary>
-        /// Downloads a package from a server URL locally
-        /// </summary>
-        /// <param name="packageDownloadURL"> Hosted Directory above the package location ex. http://64.225.60.116:8080  </param>
-        /// <param name="serverPackageRoot"> Hosted Directory within above directory ex. packages, creating http://64.225.60.116:8080/packages) </param>
-        /// <param name="localServerPackageDirectory"> Local directory to save packages ex. SERVER_PACKAGES </param>
-        /// <param name="serverPackageURL">The url from the server (https or "packages/{something}.zip"</param>
-        /// <param name="callback"> Returns the local path of the downloaded file </param>
-        public static async Task DownloadPackage(CustomPackageServer pkg, string packageDownloadURL, string localServerPackageDirectory)
+
+        public struct TEMPOnlinePackage
         {
-            string serverDownloadURL = (packageDownloadURL + "/" + pkg.ServerURL);
-            //string localDownloadExtractPath = Path.Combine(localServerPackageDirectory, pkg.GUID.ToString());
-            string localDownloadExtractPath = Path.Combine(localServerPackageDirectory, pkg.ServerURL.Substring("packages/".Length));
-
-            await DownloadPackageInner(serverDownloadURL, localDownloadExtractPath);
+            [JsonProperty("filePath")]
+            public string FilePath;
+            [JsonProperty("time")]
+            public DateTime UploadTime;
+            [JsonProperty("beatmaps")]
+            public Dictionary<string, TEMPOnlineBeatmap> Beatmaps;
         }
 
-        private static bool _dealingWithTempFile;
-
-        private static async Task DownloadPackageInner(string downloadURL, string targetFolder)
+        public struct TEMPOnlineBeatmap
         {
-            ScheduleHelper.SafeLog($"Downloading package from {downloadURL} to {targetFolder}");
-
-            string tempDownloadFilePath = ".TEMP.zip";
-
-            // Impromptu mutex, as per usual.
-            // Only let one download handle the temporary file at a time.
-            while (_dealingWithTempFile)
-            {
-                Thread.Sleep(200);
-            }
-
-            _dealingWithTempFile = true;
-            try
-            {
-                await FetchHelper.DownloadFile(downloadURL, tempDownloadFilePath);
-
-                // Extract
-                ZipHelper.ExtractToDirectory(tempDownloadFilePath, targetFolder);
-                // Delete old
-                File.Delete(tempDownloadFilePath);
-
-                // bad but works
-                foreach (string subDir in Directory.EnumerateDirectories(targetFolder, "*.*", SearchOption.AllDirectories).AddItem(targetFolder).ToHashSet())
-                {
-                    await PackageHelper.TryPopulatePackageCore(subDir, Config.Mod.ServerPackagesDir);
-                }
-                //await PackageHelper.TryPopulatePackageCore(targetFolder, Config.Mod.ServerPackagesDir).ContinueWith();
-                ScheduleHelper.SafeInvoke(() => CustomBeatmaps.LocalServerPackages.UpdatePackageTest(targetFolder));
-
-            }
-            catch (Exception)
-            {
-                _dealingWithTempFile = false;
-                throw;
-            }
-            _dealingWithTempFile = false;
+            [JsonProperty("name")]
+            public string SongName;
+            [JsonProperty("artist")]
+            public string Artist;
+            [JsonProperty("creator")]
+            public string Creator;
+            [JsonProperty("difficulty")]
+            public string Difficulty;
+            [JsonProperty("audioFileName")]
+            public string AudioFileName;
         }
-
     }
 }

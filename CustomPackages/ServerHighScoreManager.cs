@@ -151,7 +151,7 @@ namespace CustomBeatmaps.CustomPackages
 
                 if (score.song.StartsWith("CUSTOM__server__"))
                 {
-                    var localPath = ((CustomBeatmap)ArcadeSongDatabase.Instance.SongDatabase[score.song].BeatmapInfo).Data.SongPath;
+                    var localPath = ((ModdedBeatmapInfo)ArcadeSongDatabase.Instance.SongDatabase[score.song].BeatmapInfo).Data.SongPath;
                     var key =
                         UserServerHelper.GetHighScoreBeatmapKeyFromLocalBeatmap(Config.Mod.ServerPackagesDir,
                             localPath);

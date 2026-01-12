@@ -11,7 +11,7 @@ namespace CustomBeatmaps.UI
     public enum Tab
     {
         //Online, Local, Submissions, Osu
-        Online, Local, Osu
+        Online, Local, Edit
     }
 
     public enum SortMode
@@ -81,40 +81,4 @@ namespace CustomBeatmaps.UI
         }
     }
 
-    public struct BeatmapHeader
-    {
-        public string Name;
-        public string Artist;
-        public string Creator;
-        public string Difficulty;
-        public string IconURL;
-        public int Level;
-        public string FlavorText;
-        public string[] Attributes;
-
-        public BeatmapHeader(string name, string artist, string creator, string difficulty, string iconURL, int level, string flavorText, HashSet<string> attributes)
-        {
-            Name = name;
-            Artist = artist;
-            Creator = creator;
-            Difficulty = difficulty;
-            IconURL = iconURL;
-            Level = level;
-            FlavorText = flavorText;
-            Attributes = attributes.ToArray();
-            /*
-            if (attributes != null)
-            {
-                var trueValues = new List<string>();
-                foreach (string k in attributes.Keys)
-                {
-                    if (attributes[k])
-                        trueValues.Add(k);
-                }
-                Attributes = trueValues.ToArray();
-            }
-            */
-            
-        }
-    }
 }

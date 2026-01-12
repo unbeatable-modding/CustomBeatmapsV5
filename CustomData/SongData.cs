@@ -31,7 +31,7 @@ namespace CustomBeatmaps.CustomData
 
         public List<BeatmapData> BeatmapDatas = new();
 
-        public CustomBeatmap[] BeatmapInfos
+        public ModdedBeatmapInfo[] BeatmapInfos
         {
             get
             {
