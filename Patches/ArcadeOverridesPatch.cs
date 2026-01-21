@@ -53,7 +53,6 @@ namespace CustomBeatmaps.Patches
         }
 
         // ALWAYS load custom songs regardless of the games thoughts
-        [HarmonyDebug]
         [HarmonyPatch(typeof(ArcadeSongDatabase), "Awake")]
         [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> SongDatabaseTranspiler(IEnumerable<CodeInstruction> instructions)

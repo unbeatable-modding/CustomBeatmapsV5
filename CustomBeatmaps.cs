@@ -103,7 +103,7 @@ namespace CustomBeatmaps
 
         void Awake()
         {
-            Logger.LogInfo("CustomBeatmapsV4: Awake?");
+            Logger.LogInfo("CustomBeatmapsV5: Awake?");
             UnityEngine.Object.DontDestroyOnLoad(this);
             Log = base.Logger;
 
@@ -125,7 +125,8 @@ namespace CustomBeatmaps
                 //typeof(AudioPatch),
                 typeof(UIButtonPatch),
                 typeof(LongPathPatch),
-                typeof(HighScorePatch)
+                typeof(HighScorePatch),
+                typeof(GameFixesPatch)
             };
             foreach (var toPatch in classesToPatch)
             {
@@ -148,18 +149,21 @@ namespace CustomBeatmaps
 
         public void Start()
         {
+
             // Disclaimer screen
             Logger.LogDebug($"Opening Disclaimer Disabled: {Memory.OpeningDisclaimerDisabled}");
             if (!Memory.OpeningDisclaimerDisabled)
             {
                 // Make the game freeze
                 Time.timeScale = 0;
+                JeffBezosController.SetTimeScale(0);
 
                 var disclaimer = new GameObject().AddComponent<OpeningDisclaimerUIBehaviour>();
                 disclaimer.OnSelect += () =>
                 {
                     // Reload
                     Time.timeScale = 1;
+                    JeffBezosController.SetTimeScale(1f, 0f);
                     Memory.OpeningDisclaimerDisabled = true;
                     GameMemory.Save(MEMORY_LOCATION, Memory);
                     SceneManager.LoadScene(0);
