@@ -14,12 +14,13 @@ namespace CustomBeatmaps.UI
 {
     public class PackageTabUIOnline : AbstractPackageTab<CustomPackageServer>
     {
-        private BeatmapDownloadStatus DLStatus;
+        private BeatmapDownloadStatus DLStatus { get; set; }
 
         protected int _selectedHeaderIndex = 0;
 
         public PackageTabUIOnline(PackageManagerServer manager) : base(manager)
-        {  
+        {
+            
             LeftRender = () =>
             {
                 GUILayout.BeginHorizontal();
@@ -164,11 +165,6 @@ namespace CustomBeatmaps.UI
             renderHeaderSortPicker?.Invoke();
             GUILayout.EndHorizontal();
             //GUILayout.Space(20);
-        }
-
-        protected override void SortPackages()
-        {
-            UIConversionHelper.SortPackages(_pkgHeaders, SortMode);
         }
 
         protected override bool MapPackages()

@@ -47,6 +47,8 @@ namespace CustomBeatmaps.UISystem
         protected Action[] RightRenders;
         protected string _searchQuery;
 
+
+
         public AbstractPackageTab(PackageManagerGeneric<P> manager)
         {
             Manager = manager;
@@ -81,7 +83,7 @@ namespace CustomBeatmaps.UISystem
 
             SetSortMode = (val) => {
                 _sortMode = val;
-                SortPackages();
+                //SortPackages();
                 Reload(true);
             };
 
@@ -109,14 +111,15 @@ namespace CustomBeatmaps.UISystem
             var pkg = _selectedPackage;
             _pkgHeaders = Manager.Packages;
             RegenerateHeaders();
+            SortPackages();
 
             // Try to keep the same package selected when retain is true
             if (retain)
             {
                 var packages = _pkgHeaders.ToList();
-                if (packages.Contains(pkg))
+                if (packages.Exists(p => p.GUID == pkg.GUID))
                 {
-                    SetSelectedPackageIndex(packages.IndexOf(pkg));
+                    SetSelectedPackageIndex(packages.FindIndex(p => p.GUID == pkg.GUID));
                     return;
                 }
             }
@@ -129,7 +132,10 @@ namespace CustomBeatmaps.UISystem
 
             MapPackages();
         }
-        protected abstract void SortPackages();
+        protected virtual void SortPackages()
+        {
+            UIConversionHelper.SortPackages(_pkgHeaders, SortMode);
+        }
         protected virtual void RegenerateHeaders()
         {
             var headers = new List<P>(_pkgHeaders.Count);
@@ -166,6 +172,8 @@ namespace CustomBeatmaps.UISystem
                 SetSelectedBeatmapIndex?.Invoke(_selectableBeatmaps.Count - 1);
 
             _selectedBeatmap = _selectedPackage.BeatmapDatas[SelectedBeatmapIndex];
+
+            PreviewAudio();
 
             return true;
         }
@@ -246,7 +254,7 @@ namespace CustomBeatmaps.UISystem
             if (SelectedPackageIndex > _pkgHeaders.Count)
                 SetSelectedPackageIndex(_pkgHeaders.Count - 1);
 
-            PreviewAudio();
+            //PreviewAudio();
 
             // Render
             onRenderAboveList();
@@ -258,7 +266,7 @@ namespace CustomBeatmaps.UISystem
             GUILayout.EndHorizontal();
         }
 
-        protected void PreviewAudio()
+        public void PreviewAudio()
         {
             if (LoadingArcade)
                 return;
@@ -271,5 +279,6 @@ namespace CustomBeatmaps.UISystem
                 }
             }
         }
+
     }
 }

@@ -1,5 +1,9 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using CustomBeatmaps.CustomPackages;
+using CustomBeatmaps.UISystem;
 using CustomBeatmaps.Util;
 using UnityEngine;
 
@@ -11,8 +15,38 @@ namespace CustomBeatmaps.UI
     {
         private static PackageTabUIOnline OnlinePackageList = new PackageTabUIOnline(CustomBeatmaps.LocalServerPackages);
         private static PackageTabUILocal LocalPackageList = new PackageTabUILocal(CustomBeatmaps.LocalUserPackages);
-        private static PackageTabUIEditor OsuPackageList = new PackageTabUIEditor(CustomBeatmaps.LocalEditorPackages);
+        private static PackageTabUIEditor EditorPackageList = new PackageTabUIEditor(CustomBeatmaps.LocalEditorPackages);
         //private static PackageTabUISubmission SubmissionPackageList = new PackageTabUISubmission(CustomBeatmaps.LocalSubmissionPackages);
+
+        public static void PreviewCurrentAudio()
+        {
+            // idk this is a bad way of doing this
+            try
+            {
+                switch (CustomBeatmaps.Memory.SelectedTab)
+                {
+                    case Tab.Online:
+                        try
+                        {
+                            OnlinePackageList.PreviewAudio();
+                        }
+                        catch
+                        {
+                            LocalPackageList.PreviewAudio();
+                        }
+                        break;
+                    case Tab.Local:
+                        LocalPackageList.PreviewAudio();
+                        break;
+                    case Tab.Edit:
+                        EditorPackageList.PreviewAudio();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            catch (Exception) { }
+        }
 
         public static void Render()
         {
@@ -33,7 +67,11 @@ namespace CustomBeatmaps.UI
             // Remember our tab state statically for convenience (ShaiUI might have been right here, maybe I didn't even need react lmfao)
             (Tab tab, Action<Tab> setTab) = (CustomBeatmaps.Memory.SelectedTab, val => {
                 CustomBeatmaps.Memory.SelectedTab = val;
-            });
+
+                if (CustomBeatmapsUIBehaviour.Opened)
+                    PreviewCurrentAudio();
+            }
+            );
 
             try
             {
@@ -52,26 +90,8 @@ namespace CustomBeatmaps.UI
                     case Tab.Local:
                         LocalPackageList.Render(() => RenderListTop(tab, setTab));
                         break;
-                        /*
-                    case Tab.Submissions:
-                        try
-                        {
-                            SubmissionPackageList.Render(() => RenderListTop(tab, setTab));
-                        }
-                        catch
-                        {
-                            LocalPackageList.Render(() => RenderListTop(tab, setTab));
-                        }
-                        break;
-                        */
-                    /*
-                case Tab.Submissions:
-                    SubmissionPackageListUI.Render(() => RenderListTop(tab, setTab));
-                    break;
-                    */
                     case Tab.Edit:
-                        OsuPackageList.Render(() => RenderListTop(tab, setTab));
-                        //OSUPackageList.Render(() => RenderListTop(tab, setTab));
+                        EditorPackageList.Render(() => RenderListTop(tab, setTab));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -123,17 +143,6 @@ namespace CustomBeatmaps.UI
                         return "Online";
                     case Tab.Local:
                         return "Local";
-                    //case Tab.Submissions:
-                    //    return "Submissions";
-
-                    // OLD AND UNFIXED
-                    /*
-                case Tab.Submissions:
-                    var p = CustomBeatmaps.SubmissionPackageManager;
-                    if (p.ListLoaded && p.SubmissionPackages.Count > 0)
-                        return $"Submissions <b>x {p.SubmissionPackages.Count}!</b>";
-                    return "Submissions";
-                    */
                     case Tab.Edit:
                         return "Editor";
                     default:

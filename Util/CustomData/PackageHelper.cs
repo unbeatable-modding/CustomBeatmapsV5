@@ -18,14 +18,6 @@ namespace CustomBeatmaps.Util.CustomData
     public static class PackageHelper
     {
 
-        // TODO: make this not hardcoded
-        public static readonly Category[] customCategories = {
-            new Category("LOCAL", "Local songs", 7),
-            new Category("submissions", "temp songs", 8),
-            new Category("editor", "click the circle", 9),
-            new Category("server", "online", 10)
-            };
-
         /// <summary>
         /// Returns true or false depending on if the out package should be loaded
         /// </summary>
@@ -214,32 +206,6 @@ namespace CustomBeatmaps.Util.CustomData
             ScheduleHelper.SafeLog($"####### FULL PACKAGES LIST: #######\n{result.Join(delimiter: "\n")}");
 
             return result.ToArray();
-        }
-
-        /// <summary>
-        /// Adds Custom Categories into the game
-        /// </summary>
-        public static void TryAddCustomCategory()
-        {
-            foreach (var customCategory in customCategories)
-            {
-                var traverse = Traverse.Create(BeatmapIndex.defaultIndex);
-                var categories = traverse.Field("categories").GetValue<List<Category>>();
-                var categorySongs = traverse.Field("_categorySongs").GetValue<Dictionary<Category, List<Song>>>();
-
-
-                // Check if the custom category already exists
-                if (!categories.Contains(customCategory))
-                {
-                    // If not, add it to the list
-                    categories.Add(customCategory);
-                    categorySongs.TryAdd(customCategory, new List<Song>([new Song("LoadBearingSongDoNotDeleteThisSeriously")]));
-                    //categorySongs.TryAdd(customCategory, new List<Song>());
-
-                    ScheduleHelper.SafeLog($"Added category {customCategory.Name}");
-
-                }
-            }
         }
 
         /// <summary>

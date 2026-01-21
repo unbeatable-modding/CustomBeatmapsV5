@@ -292,7 +292,6 @@ namespace CustomBeatmaps.Util.CustomData
                 {
                     await PackageHelper.TryPopulatePackageCore(subDir, Config.Mod.ServerPackagesDir);
                 }
-                //await PackageHelper.TryPopulatePackageCore(targetFolder, Config.Mod.ServerPackagesDir).ContinueWith();
                 ScheduleHelper.SafeInvoke(() => CustomBeatmaps.LocalServerPackages.UpdatePackageTest(targetFolder));
 
             }

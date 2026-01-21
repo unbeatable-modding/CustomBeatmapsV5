@@ -70,16 +70,19 @@ namespace CustomBeatmaps.CustomPackages
         private async void DownloadPackageInner(CustomPackageServer package, string pkgDir)
         {
             _currentlyDownloading = package.ServerURL;
+            package.DownloadStatus = BeatmapDownloadStatus.CurrentlyDownloading;
 
             try
             {
                 await PackageServerHelper.DownloadPackage(package,
                     Config.Backend.ServerStorageURL,
                     pkgDir);
+                package.DownloadStatus = BeatmapDownloadStatus.Downloaded;
             }
             catch (Exception e)
             {
                 ScheduleHelper.SafeLog($"FAILED DOWNLOADING PACKAGE (skipping): {e}");
+                package.DownloadStatus = BeatmapDownloadStatus.NotDownloaded;
                 _currentlyDownloading = null;
             }
 
@@ -105,10 +108,12 @@ namespace CustomBeatmaps.CustomPackages
                 bool notDownloading = _currentlyDownloading == null;
                 if (notDownloading)
                 {
+                    
                     DownloadPackageInner(package, pkgDir);
                 }
                 else
                 {
+                    package.DownloadStatus = BeatmapDownloadStatus.Queued;
                     _queuedIdsToDownload.Enqueue((package, pkgDir));
                 }
 

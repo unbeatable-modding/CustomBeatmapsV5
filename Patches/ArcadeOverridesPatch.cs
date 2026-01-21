@@ -53,74 +53,47 @@ namespace CustomBeatmaps.Patches
         }
 
         // ALWAYS load custom songs regardless of the games thoughts
+        [HarmonyDebug]
         [HarmonyPatch(typeof(ArcadeSongDatabase), "Awake")]
         [HarmonyTranspiler]
-        public static IEnumerable<CodeInstruction> SongDatabaseTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+        public static IEnumerable<CodeInstruction> SongDatabaseTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            var code = new List<CodeInstruction>(instructions);
-            int startIndex = -1, endIndex = -1;
+            var codeMatcher = new CodeMatcher(instructions);
 
-            /*
-             	// look for "if ((Application.isEditor || Environment.GetCommandLineArgs().Contains("-customsongs")) && Directory.Exists(Path.Combine(Application.persistentDataPath, "CustomSongs")))"
-	            
-                IL CODE REFERENCE:
-                IL_0047: call bool [UnityEngine.CoreModule]UnityEngine.Application::get_isEditor()
-	            IL_004c: brtrue.s IL_005f
+            CodeInstruction[] tmp = [
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(ArcadeSongDatabase), "_beatmapIndex"))
+                ];
 
-	            IL_004e: call string[] [netstandard]System.Environment::GetCommandLineArgs()
-	            IL_0053: ldstr "-customsongs"
-	            IL_0058: call bool [netstandard]System.Linq.Enumerable::Contains<string>(class [netstandard]System.Collections.Generic.IEnumerable`1<!!0>, !!0)
-	            IL_005d: brfalse.s IL_007c
+            codeMatcher
+                .MatchForward(false,
+                    new CodeMatch(OpCodes.Call, AccessTools.PropertyGetter(typeof(UnityEngine.Application), nameof(UnityEngine.Application.isEditor)))
+                    ) // Get rid of the "--customsongs" check
+                .RemoveInstructions(11)
+                .MatchForward(false,
+                    new CodeMatch(OpCodes.Ldarg_0),
+                    new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(ArcadeSongDatabase), "_loadCustomSongs"))
+                    ) // Don't add the "custom" category
+                .RemoveInstructions(10)
+                .MatchForward(false,
+                    //new CodeMatch(OpCodes.Ldarg_0),
+                    new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(ArcadeSongDatabase), "_beatmapIndex")),
+                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(BeatmapIndex), nameof(BeatmapIndex.GetVisibleCategories))),
+                    new CodeMatch(OpCodes.Ldsfld),
+                    new CodeMatch(OpCodes.Dup)
+                )
+                .RemoveInstructions(19)
+                .InsertAndAdvance(
+                    [
+                        //new CodeInstruction(OpCodes.Ldarg_0),
+                        new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(ArcadeSongDatabase), "_beatmapIndex")),
+                        new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(ArcadeSongDatabase), "allCategory")),
+                        new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ArcadeOverridesPatch), nameof(ArcadeOverridesPatch.LazyCategoryFix)))
+                    ]
+                );
 
-	            IL_005f: call string [UnityEngine.CoreModule]UnityEngine.Application::get_persistentDataPath()
-	            IL_0064: ldstr "CustomSongs"
-	            IL_0069: call string [netstandard]System.IO.Path::Combine(string, string)
-	            IL_006e: call bool [netstandard]System.IO.Directory::Exists(string)
-	            IL_0073: brfalse.s IL_007c
-             */
+            return codeMatcher.Instructions();
 
-            //var codeMatcher = new CodeMatcher(instructions);
-            for (int i = 0; i < code.Count - 11; i++)
-            {
-                // if ((Application.isEditor || Environment.GetCommandLineArgs().Contains("-customsongs")) && Directory.Exists(Path.Combine(Application.persistentDataPath, "CustomSongs")))
-                if (code[i].opcode == OpCodes.Call &&
-                    object.ReferenceEquals(code[i].operand, AccessTools.PropertyGetter(typeof(UnityEngine.Application), nameof(UnityEngine.Application.isEditor))) &&
-                    code[i + 1].opcode == OpCodes.Brtrue && // idk why short form doesn't work here
-                    code[i + 2].opcode == OpCodes.Call &&
-                    object.ReferenceEquals(code[i + 2].operand, AccessTools.Method(typeof(System.Environment), nameof(System.Environment.GetCommandLineArgs))) &&
-                    code[i + 3].opcode == OpCodes.Ldstr &&
-                    code[i + 4].opcode == OpCodes.Call &&
-                    code[i + 5].opcode == OpCodes.Brfalse &&
-
-                    code[i + 6].opcode == OpCodes.Call &&
-                    object.ReferenceEquals(code[i + 6].operand, AccessTools.PropertyGetter(typeof(UnityEngine.Application), nameof(UnityEngine.Application.persistentDataPath))) &&
-                    code[i + 7].opcode == OpCodes.Ldstr &&
-                    code[i + 8].opcode == OpCodes.Call &&
-                    object.ReferenceEquals(code[i + 8].operand, AccessTools.Method(typeof(System.IO.Path), nameof(System.IO.Path.Combine),
-                        new Type[] { typeof(string), typeof(string) })) &&
-                    code[i + 9].opcode == OpCodes.Call &&
-                    object.ReferenceEquals(code[i + 9].operand, AccessTools.Method(typeof(System.IO.Directory), nameof(System.IO.Directory.Exists),
-                        new Type[] { typeof(string) })) &&
-                    code[i + 10].opcode == OpCodes.Brfalse
-                    )
-                {
-                    startIndex = i;
-                    endIndex = i + 11;
-                }
-
-            }
-
-            if (startIndex < 0 || endIndex < 0)
-            {
-                CustomBeatmaps.Log.LogError("FAILED TO TRANSPILE OUT CLI ARGS, THIS IS VERY BAD");
-                CustomBeatmaps.Log.LogError("Returning original code...");
-                return instructions;
-            }
-
-            code[startIndex].opcode = OpCodes.Nop;
-            code.RemoveRange(startIndex + 1, endIndex - startIndex - 1);
-
-            return code;
         }
 
         [HarmonyPatch(typeof(ArcadeSongInfos), "SongInfosStringChanged")]
@@ -195,6 +168,12 @@ namespace CustomBeatmaps.Patches
             murdered = false;
         }
 
-
+        // this is a base game issue...
+        private static Category LazyCategoryFix(BeatmapIndex _beatmapIndex, Category allCategory)
+        {
+            return ((_beatmapIndex.GetVisibleCategories().FirstOrDefault((BeatmapIndex.Category c) => c.Name == FileStorage.beatmapOptions.arcadeSelectedCategory) != null)
+                ? _beatmapIndex.GetVisibleCategories().FirstOrDefault((BeatmapIndex.Category c) => c.Name == FileStorage.beatmapOptions.arcadeSelectedCategory) 
+                : allCategory);
+        }
     }
 }

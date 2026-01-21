@@ -33,7 +33,8 @@ namespace CustomBeatmaps.Util.CustomData
 
         public static string GetBeatmapImage(string beatmapText, string beatmapPath)
         {
-            var match = Regex.Match(beatmapText, $"Background and Video events\r?\n.*\"(.+?)\"");
+            //var match = Regex.Match(beatmapText, $"Background and Video events\r?\n.*\"(.+?)\"");
+            var match = Regex.Match(beatmapText, $"0,0,\"(.+?)\",0,0");
             if (match.Groups.Count > 1)
             {
                 return match.Groups[1].Value;

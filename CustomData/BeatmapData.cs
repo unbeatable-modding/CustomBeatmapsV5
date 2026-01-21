@@ -197,7 +197,7 @@ namespace CustomBeatmaps.CustomData
         }
 
         /// <summary>
-        /// BeatmapData from Online Beatmaps
+        /// BeatmapData from Online Beatmaps (temp)
         /// </summary>
         public BeatmapData(TEMPOnlineBeatmap oBmap, Guid guid, int offset, CCategory category)
         {
@@ -205,7 +205,6 @@ namespace CustomBeatmaps.CustomData
             Offset = offset;
 
             SongName = oBmap.SongName;
-            //InternalName = $"CUSTOM__{Category.InternalCategory}__{guid}-{Offset}";
             GUID = guid;
             Artist = oBmap.Artist;
             Creator = oBmap.Creator;

@@ -41,19 +41,16 @@ namespace CustomBeatmaps.UI
             // This is lazy but it works for now
             GameObject.Find("New Arcade Menu/ScreenArea/MainScreens").SetActive(false);
             GameObject.Find("New Arcade Menu/ScreenArea/OptionsCorner").SetActive(false);
-            //if (!ArcadeBGMManager.Paused)
-            //    ArcadeBGMManager.Instance.StopSongPreview();
 
             GUIHelper.AvoidInputOneFrame();
             _releaseInputTimer = 3;
             _open = true;
+            CustomBeatmapsUI.PreviewCurrentAudio();
             DOTween.Kill(this);
             DOTween.To(() => _windowOffset, value => _windowOffset = value, Vector2.zero, 0.2f)
                 .SetEase(Ease.OutBounce)
                 .SetId(this);
             OnGUI();
-            //WhiteLabelMainMenuPatch.DisableBGM();
-
             // Reload our high scores + submissions just to be clean/up to date
             //CustomBeatmaps.ServerHighScoreManager.Reload();
             //CustomBeatmaps.SubmissionPackageManager.RefreshServerSubmissions();
@@ -67,28 +64,6 @@ namespace CustomBeatmaps.UI
             //ArcadeBGMManager.Instance.PlaySongPreview();
         }
 
-        public void oldClose()
-        {
-            if (!_open || DOTween.IsTweening(this))
-                return;
-
-            _releaseInputTimer = -1;
-            DOTween.Kill(this);
-            DOTween.To(() => _windowOffset, value => _windowOffset = value,
-                new Vector2(-Screen.width, -1f * (float)Screen.height / 4f) // Looks better if we move more to the left when exiting
-                , 0.5f)
-                .SetEase(Ease.OutExpo)
-                .SetId(this)
-                .OnComplete(() =>
-                {
-                    _open = false;
-                    //WhiteLabelMainMenuPatch.EnableBGM();
-                    //WhiteLabelMainMenuPatch.StopSongPreview();
-                    _windowOffset = new Vector2(-1 * Screen.width, -1 * Screen.height);
-                });
-
-            
-        }
 
         private void Update()
         {
@@ -112,7 +87,11 @@ namespace CustomBeatmaps.UI
                     //float bw = (120 / tmpScale) - bp * 2,
                     //    bh = (30 / tmpScale) - bp * 2;
                     if (GUI.Button(new Rect(bp + _windowOffset.x, bp + _windowOffset.y, 120, 30), "Custom Beatmaps"))
+                    {
                         this.Open();
+                        
+                    }
+                        
                 }
                 
                 return;

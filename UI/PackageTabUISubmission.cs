@@ -161,11 +161,6 @@ namespace CustomBeatmaps.UI
             //GUILayout.Space(20);
         }
 
-        protected override void SortPackages()
-        {
-            UIConversionHelper.SortPackages(_pkgHeaders, SortMode);
-        }
-
         protected override bool MapPackages()
         {
             // Run base Method first and abort if No Packages (base returns false)

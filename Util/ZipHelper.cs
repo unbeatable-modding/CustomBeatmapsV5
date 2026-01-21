@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO.Compression;
-
+using System.Threading.Tasks;
 using File = Pri.LongPath.File;
 using Path = Pri.LongPath.Path;
 
@@ -9,7 +9,7 @@ namespace CustomBeatmaps.Util
 {
     public static class ZipHelper
     {
-        const string Path7Zip = "BepInEx/plugins/CustomBeatmapsV4/7z/7z.exe";
+        const string Path7Zip = "BepInEx/plugins/CustomBeatmapsV5/7z/7z.exe";
 
         private static bool Has7Zip()
         {
@@ -95,6 +95,7 @@ namespace CustomBeatmaps.Util
                     else
                     {
                         // We're done.
+                        process.Close();
                         return;
                     }
                 }

@@ -207,8 +207,6 @@ namespace CustomBeatmaps.CustomData
         }
 
         // Custom Images Stuff
-        // Note: this will crash if not SafeInvoke'd
-        // (I have no idea why)
         public void GetTexture()
         {
             if (!CustomBeatmaps.CanGetTexture)

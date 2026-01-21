@@ -59,6 +59,22 @@ namespace CustomBeatmaps.Patches
             }
         }
 
+        public static bool silent = false;
+
+        //[HarmonyPatch(typeof(ArcadeBGMManager), "PlaySongPreview")]
+        //[HarmonyPrefix]
+        static bool DontChangeSongsForPath(ref ArcadeSongDatabase.BeatmapItem item, ref ArcadeSongDatabase.BeatmapItem ___currentItem)
+        {
+            if (silent && item != ___currentItem)
+            {
+                silent = false;
+                return false;
+            }
+            return true;
+        }
+
+
+
         /*
         [HarmonyPatch(typeof(ArcadeBGMManager), "OnSelectedSongChanged")]
         [HarmonyPrefix]

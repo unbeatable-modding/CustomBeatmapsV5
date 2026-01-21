@@ -41,9 +41,5 @@ namespace CustomBeatmaps.UI
             
         }
 
-        protected override void SortPackages()
-        {
-            UIConversionHelper.SortPackages(_pkgHeaders, SortMode);
-        }
     }
 }

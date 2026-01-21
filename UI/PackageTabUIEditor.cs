@@ -57,11 +57,6 @@ namespace CustomBeatmaps.UI
             ];
         }
 
-        protected override void SortPackages()
-        {
-            UIConversionHelper.SortPackages(_pkgHeaders, SortMode);
-        }
-
         protected override void RunSong()
         {
             //Manager.ImmortalizeBeatmap(_selectedBeatmap.di);

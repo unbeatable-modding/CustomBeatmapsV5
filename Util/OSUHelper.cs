@@ -51,13 +51,13 @@ namespace CustomBeatmaps.Util
 
             // Zip
             string packageName = pkg.Name;
-            string osuFullPath = Path.GetFullPath(pkg.BaseDirectory);
-            int lastSlash = osuFullPath.LastIndexOf("\\", StringComparison.Ordinal);
-            string osuParentDir = lastSlash != -1 ? osuFullPath.Substring(0, lastSlash) : "";
+            //string osuFullPath = Path.GetFullPath(pkg.BaseDirectory);
+            //int lastSlash = osuFullPath.LastIndexOf("\\", StringComparison.Ordinal);
+            //string osuParentDir = lastSlash != -1 ? osuFullPath.Substring(0, lastSlash) : "";
 
             string zipTarget = $"{temporaryFolderLocation}/{packageName}.zip";
 
-            ZipHelper.CreateFromDirectory(osuParentDir, zipTarget);
+            ZipHelper.CreateFromDirectory(pkg.BaseDirectory, zipTarget);
 
             return zipTarget;
         }

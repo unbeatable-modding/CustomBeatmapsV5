@@ -57,13 +57,11 @@ namespace CustomBeatmaps
             // Log inner exceptions by default
             EventBus.ExceptionThrown += ex => ScheduleHelper.SafeInvoke(() => Debug.LogException(ex));
 
-            PackageHelper.TryAddCustomCategory();
+            //PackageHelper.TryAddCustomCategory();
 
             // Anything with Static access should be ALWAYS present.
             LocalUserPackages = new PackageManagerMulti(OnError);
             LocalServerPackages = new PackageManagerServer(OnError);
-            //LocalSubmissionPackages = new PackageManagerSubmission(OnError);
-            //SubmissionPackageManager = new SubmissionPackageManager(OnError);
             LocalEditorPackages = new PackageManagerLocal(OnError);
             ServerHighScoreManager = new ServerHighScoreManager();
 
@@ -72,17 +70,15 @@ namespace CustomBeatmaps
 
             // Load game memory from disk
             Memory = GameMemory.Load(MEMORY_LOCATION);
-
-            //LocalServerPackages.GenerateCorePackages();
             
             ConfigHelper.LoadConfig("custombeatmaps_config.json", () => new ModConfig(), config =>
             {
                 ModConfig = config;
                 // Local package folders
-                LocalUserPackages.SetFolders(config.UserPackagesDir, new CCategory(6));
-                LocalServerPackages.SetFolder(config.ServerPackagesDir, new CCategory(9));
+                LocalUserPackages.SetFolders(config.UserPackagesDir, new CCategory("LOCAL"));
+                LocalServerPackages.SetFolder(config.ServerPackagesDir, new CCategory("server"));
                 //LocalSubmissionPackages.SetFolder(config.TemporarySubmissionPackageFolder, new CCategory(8));
-                LocalEditorPackages.SetFolder(config.OsuSongsOverrideDirectory, new CCategory(8));
+                LocalEditorPackages.SetFolder(config.OsuSongsOverrideDirectory, new CCategory("editor"));
                 PlayedPackageManager = new PlayedPackageManager(config.PlayedBeatmapList);
             });
             ConfigHelper.LoadConfig("CustomBeatmapsV4-Data/custombeatmaps_backend.json", () => new BackendConfig(), config => BackendConfig = config);
@@ -145,7 +141,7 @@ namespace CustomBeatmaps
                 }
             }
 
-            PackageHelper.TryAddCustomCategory();
+            //PackageHelper.TryAddCustomCategory();
         }
 
         public static bool CanGetTexture = false;

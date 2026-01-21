@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Threading;
 
 using static Rhythm.BeatmapIndex;
+using CustomBeatmaps.Patches;
 
 namespace CustomBeatmaps.Util
 {
@@ -116,9 +117,12 @@ namespace CustomBeatmaps.Util
         }
         public static void ForceSelectSong(BeatmapData bmap)
         {
-            SongDatabase.SetCategory(bmap.Category.InternalCategory);
+            UIButtonPatch.silent = true;
+            if (ArcadeSongDatabase.SelectedCategory.Name != "all")
+                SongDatabase.SetCategory(bmap.Category.InternalCategory);
+            SongList.SetSelectedSongIndex(SongDatabase.IndexOfSong(bmap.SongPath));
             SongDatabase.SetDifficulty(bmap.InternalDifficulty);
-            SongList.SetSelectedSongIndex(SongDatabase.SongList.FindIndex(b => b.Path == bmap.SongPath));
+            //UIButtonPatch.silent = false;
         }
         public static void PlaySongEdit(BeatmapData bmap, bool enableCountdown = false)
         {
