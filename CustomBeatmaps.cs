@@ -116,6 +116,7 @@ namespace CustomBeatmaps
 
             // Harmony Patching
             Type[] classesToPatch = {
+                typeof(CursorUnhidePatch),
                 typeof(DebugLogPatch),
                 //typeof(OsuEditorPatch),
                 typeof(OneLifeModePatch),

@@ -14,7 +14,7 @@ namespace CustomBeatmaps.Patches
         [HarmonyPostfix]
         public static void JeffBezosPostUpdate()
         {
-            if (CustomBeatmapsUIBehaviour.Opened || HighScoreUIBehaviour.Opened)
+            if (CustomBeatmapsUIBehaviour.Opened || HighScoreUIBehaviour.Opened || !CustomBeatmaps.Memory.OpeningDisclaimerDisabled)
             {
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
