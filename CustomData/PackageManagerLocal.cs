@@ -79,8 +79,8 @@ namespace CustomBeatmaps.CustomData
             if (!Directory.Exists(folderPath))
             {
                 // Reload here as a failsafe
-                PackageUpdated?.Invoke();
-                ScheduleHelper.SafeInvoke(() => ArcadeHelper.ReloadArcadeList());
+                //PackageUpdated?.Invoke();
+                ScheduleHelper.SafeInvoke(() => ArcadeHelper.ReloadArcadeList(PackageUpdated));
                 return;
             }
                 
@@ -104,8 +104,8 @@ namespace CustomBeatmaps.CustomData
                             _downloadedFolders.Add(Path.GetFullPath(package.BaseDirectory));
                         }
                     }
-                    PackageUpdated?.Invoke();
-                    ScheduleHelper.SafeInvoke(() => ArcadeHelper.ReloadArcadeList());
+                    //PackageUpdated?.Invoke();
+                    ScheduleHelper.SafeInvoke(() => ArcadeHelper.ReloadArcadeList(PackageUpdated));
                 }
                 else
                 {
@@ -132,8 +132,8 @@ namespace CustomBeatmaps.CustomData
                         _watchers.Remove(FileWatchHelper.WatchFolder(fullPath, true, OnFileChange));
 
                     ScheduleHelper.SafeLog($"REMOVED PACKAGE: {fullPath}");
-                    PackageUpdated?.Invoke();
-                    ScheduleHelper.SafeInvoke(() => ArcadeHelper.ReloadArcadeList());
+                    ScheduleHelper.SafeInvoke(() => ArcadeHelper.ReloadArcadeList(PackageUpdated));
+                    //PackageUpdated?.Invoke();
                 }
                 else
                 {

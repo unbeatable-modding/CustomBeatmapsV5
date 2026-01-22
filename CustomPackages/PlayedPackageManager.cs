@@ -13,6 +13,9 @@ namespace CustomBeatmaps.CustomPackages
 
         public PlayedPackageManager(string fileToRead)
         {
+            if (string.IsNullOrEmpty(fileToRead))
+                return;
+            
             _filePath = fileToRead;
 
             if (File.Exists(fileToRead))

@@ -71,7 +71,7 @@ namespace CustomBeatmaps.Util
         /// <summary>
         /// Forcefully reload the arcade
         /// </summary>
-        public static void ReloadArcadeList()
+        public static void ReloadArcadeList(Action onUpdate = null)
         {
             while (LoadingArcade) { Thread.Sleep(200); }
             LoadingArcade = true;
@@ -88,6 +88,7 @@ namespace CustomBeatmaps.Util
             arcade.Method("LoadDatabase").GetValue();
             arcade.Method("RefreshSongList", [false]).GetValue();
             LoadingArcade = false;
+            onUpdate?.Invoke();
         }
 
         public static ArcadeSongDatabase SongDatabase => ArcadeSongDatabase.Instance;

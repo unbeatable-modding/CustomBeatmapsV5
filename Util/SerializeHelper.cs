@@ -1,8 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using CustomBeatmaps.CustomData;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 // weird concurrency issues with this one
 // using File = Pri.LongPath.File;
@@ -27,6 +28,28 @@ namespace CustomBeatmaps.Util
                 {
                     File.WriteAllText(filePath, SerializeJSON(data, true));
                 }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to save JSON file: {filePath}", e);
+            }
+        }
+
+        public static async Task SaveJSONAsync<T>(string filePath, T data)
+        {
+            var stream = File.Open(filePath, FileMode.Create, FileAccess.Write);
+            var sw = new StreamWriter(stream);
+
+            try
+            {
+                //lock (_avoidmultiwriteLock)
+                {
+                    //File.WriteAllText(filePath, SerializeJSON(data, true));
+                    
+                }
+                await sw.WriteAsync(SerializeJSON(data, true));
+                sw.Close();
+                stream.Close();
             }
             catch (Exception e)
             {

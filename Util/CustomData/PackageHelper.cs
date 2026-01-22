@@ -346,7 +346,8 @@ namespace CustomBeatmaps.Util.CustomData
             {
                 //var relative = Path.GetFullPath(packageFolder).Substring(outerFolderPath.Length + 1);
                 var pkgCore = await GeneratePackageCore(packageFolder, recursive);
-                SerializeHelper.SaveJSON($"{packageFolder}\\package.bmap", pkgCore);
+                await SerializeHelper.SaveJSONAsync($"{packageFolder}\\package.bmap", pkgCore);
+                //SerializeHelper.SaveJSON($"{packageFolder}\\package.bmap", pkgCore);
                 //return false;
             }
             catch (Exception e)
