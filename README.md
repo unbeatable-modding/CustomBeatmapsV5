@@ -4,7 +4,7 @@ _Bigger, Bolder, Beatable!_
 
 ### This is an UNOFFICIAL mod for UNBEATABLE that lets you play and create custom beatmaps.
 
-Custom Beatmaps Mod for UNBEATABLE `V1.5.7` with ONLINE mode and HIGH SCORES _(this time for real!)_
+Custom Beatmaps Mod for UNBEATABLE `V1.7.1` with ONLINE mode and HIGH SCORES _(this time for real!)_
 
 **[Visit our Discord](https://discord.gg/XzqMhRMmhC)**
 
@@ -12,8 +12,7 @@ Custom Beatmaps Mod for UNBEATABLE `V1.5.7` with ONLINE mode and HIGH SCORES _(t
 # Features
 - Play custom Beatmaps either locally or from our discord community!
 - Test your Beatmaps directly from their OSU directory without uploads or conversions
-- High (and low) scores for both Custom Beatmaps AND UNBEATABLE official beatmaps
-- Upload your existing white label scores
+- High scores for both Custom Beatmaps AND UNBEATABLE official beatmaps
 
 # Installation
 
@@ -40,9 +39,7 @@ After:
 
 # Making Custom Beatmaps
 
-1) The best way is to use OSU's built in editor. I highly suggest taking a look at [Ratismal's Original Beatmap tutorial](https://github.com/Ratismal/CustomBeats/blob/master/creation.md), made way before even CustomBeatmapsV1.
-
-2) To test your beatmap, open the `OSU!` tab and find your beatmap there (should be at the top). Inside the edit view you can pause, make changes in OSU, save the OSU file and the beatmap will auto-reload in UNBEATABLE (as in, your changes will appear in UNBEATABLE right before your very eyes!)
+UNDER CONSTRUCTION!!! (Check discord for now)
 
 # Uploading Custom Beatmaps
 
@@ -58,9 +55,7 @@ Screenshot from v3 but it's similar enough
 
 # Known Issues
 
-- The online packages screen is a bit laggy (will fix if it becomes a problem for anyone)
-- If the beatmap server is offline, the online beatmaps you download won't be visible from the CustomBeatmaps menu (you can still play them from the arcade).
-- The OSU editor is currently semi-broken
+- Online will sometimes refuse to load songs without a restart
 
 ## Disclaimer
 

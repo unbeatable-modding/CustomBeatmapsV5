@@ -1,4 +1,5 @@
-﻿using CustomBeatmaps.UI;
+﻿using Arcade.UI;
+using CustomBeatmaps.UI;
 using CustomBeatmaps.Util;
 using Newtonsoft.Json;
 using Rhythm;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using static CustomBeatmaps.Util.CustomData.BeatmapHelper;
 using static CustomBeatmaps.Util.TEMPOnlineHelper;
@@ -63,19 +65,41 @@ namespace CustomBeatmaps.CustomData
         /// <summary>
         /// Holds paramaters for levels + extra ones added through this mod (Level, Flavor Text, (BT, MW, and 4K) Indicators, etc.)
         /// </summary>
-        public TagData Tags;
+        private TagData Tags;
 
         /// <summary>
         /// The level of this Beatmap
         /// </summary>
-        public int Level => Tags.Level;
+        public int Level
+        {
+            get => Tags.Level; 
+            set => Tags.Level = value;
+        }
 
         /// <summary>
         /// This is the stuff that's shown beside Beatmaps on the vanilla select screen
         /// </summary>
-        public string FlavorText => Tags.FlavorText;
+        public string FlavorText
+        {
+            get => Tags.FlavorText; 
+            set => Tags.FlavorText = value;
+        }
 
-        public int PreviewTime { get; private set; } = 0;
+        public string CoverArtArtist
+        {
+            get => Tags.CoverArtArtist;
+            set => Tags.CoverArtArtist = value;
+        }
+        public int PreviewTime
+        {
+            get
+            {
+                if (Tags.PreviewTime > 0)
+                    return Tags.PreviewTime;
+                return 0;
+            }
+            set => Tags.PreviewTime = value;
+        }
 
         public HashSet<string> Attributes
         {
@@ -85,7 +109,9 @@ namespace CustomBeatmaps.CustomData
                     Tags.Attributes = new();
                 return Tags.Attributes;
             }
+            set => Tags.Attributes = value;
         }
+
         /// <summary>
         /// The Song's internal name + Difficulty (This is how the game checks for songs)
         /// </summary>
@@ -155,8 +181,7 @@ namespace CustomBeatmaps.CustomData
             DirectoryPath = Path.GetDirectoryName(bmapPath);
             GUID = guid;
             Offset = offset;
-            PreviewTime = previewTime;
-            //InternalName = $"CUSTOM__{Category.InternalCategory}__{internalName}";
+            //PreviewTime = previewTime;
 
             string[] difficultyIndex = ["Beginner", "Easy", "Normal", "Hard", "UNBEATABLE", "Star"];
             InternalDifficulty = difficultyIndex[(int)internalDifficulty];
@@ -173,7 +198,6 @@ namespace CustomBeatmaps.CustomData
             Offset = offset;
 
             SongName = oBmap.SongName;
-            //InternalName = $"CUSTOM__{Category.InternalCategory}__{guid}-{Offset}";
             GUID = guid;
             Artist = oBmap.Artist;
             Creator = oBmap.Creator;
@@ -299,6 +323,15 @@ namespace CustomBeatmaps.CustomData
         public override string ToString()
         {
             return $"{{{SongName} by {Artist} ({Difficulty}) mapped {Creator} ({SongPath})}}";
+        }
+
+
+        public void SetBeatmapJson()
+        {
+            Tags.SongLength = ArcadeBGMManager.SongDuration;
+            var beatmapSave = SerializeHelper.SerializeJSON(Tags);
+            var match = Regex.Replace(BeatmapPointer.text, $"(?<=Tags:)(.+?)\r?\n", beatmapSave + "\r\n");
+            File.WriteAllText(BeatmapPath, match);
         }
     }
 

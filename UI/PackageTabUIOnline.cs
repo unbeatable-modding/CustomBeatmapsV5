@@ -121,7 +121,6 @@ namespace CustomBeatmaps.UI
                                     {
                                         if (buttonPressed)
                                         {
-                                            CustomBeatmaps.PlayedPackageManager.RegisterPlay(_selectedPackage.BaseDirectory);
                                             RunSong();
 
                                         }
@@ -149,6 +148,42 @@ namespace CustomBeatmaps.UI
                         }
                     }
                 ];
+        }
+
+        /// <summary>
+        /// Reload the Package List (for UI)
+        /// </summary>
+        /// <param name="retain">If true, this tries to remember the package currently selected by the user</param>
+        public override void Reload(bool retain)
+        {
+            // Abort if no packages
+            if (Manager.Packages.Count < 1)
+                return;
+
+            var pkg = _selectedPackage;
+            _pkgHeaders = Manager.Packages;
+            RegenerateHeaders();
+            SortPackages();
+
+            // Try to keep the same package selected when retain is true
+            if (retain && _selectedPackage != null)
+            {
+                var packages = _pkgHeaders.ToList();
+                if (packages.Exists(p => p.Name == pkg.Name))
+                {
+                    SetSelectedPackageIndex(packages.FindIndex(p => p.Name == pkg.Name));
+                    return;
+                }
+            }
+
+            if (SelectedPackageIndex > _pkgHeaders.Count)
+            {
+                SetSelectedPackageIndex(_pkgHeaders.Count - 1);
+                return;
+            }
+
+            _didFirstReload = true;
+            MapPackages();
         }
 
         private void RenderReloadHeader(string label, Action renderHeaderSortPicker = null) // ok this part is jank but that's all I need

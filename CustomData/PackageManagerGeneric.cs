@@ -18,7 +18,7 @@ namespace CustomBeatmaps.CustomData
         /// <summary>
         /// Action that is invoked after a package is updated
         /// </summary>
-        public Action PackageUpdated;
+        public Action PackageUpdated = () => { };
         
         protected readonly List<P> _packages = new List<P>();
         protected readonly HashSet<string> _downloadedFolders = new HashSet<string>();

@@ -59,11 +59,6 @@ namespace CustomBeatmaps.Patches
         {
             var codeMatcher = new CodeMatcher(instructions);
 
-            CodeInstruction[] tmp = [
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(ArcadeSongDatabase), "_beatmapIndex"))
-                ];
-
             codeMatcher
                 .MatchForward(false,
                     new CodeMatch(OpCodes.Call, AccessTools.PropertyGetter(typeof(UnityEngine.Application), nameof(UnityEngine.Application.isEditor)))
@@ -92,7 +87,6 @@ namespace CustomBeatmaps.Patches
                 );
 
             return codeMatcher.Instructions();
-
         }
 
         [HarmonyPatch(typeof(ArcadeSongInfos), "SongInfosStringChanged")]
@@ -170,9 +164,12 @@ namespace CustomBeatmaps.Patches
         // this is a base game issue...
         private static Category LazyCategoryFix(BeatmapIndex _beatmapIndex, Category allCategory)
         {
-            return ((_beatmapIndex.GetVisibleCategories().FirstOrDefault((BeatmapIndex.Category c) => c.Name == FileStorage.beatmapOptions.arcadeSelectedCategory) != null)
-                ? _beatmapIndex.GetVisibleCategories().FirstOrDefault((BeatmapIndex.Category c) => c.Name == FileStorage.beatmapOptions.arcadeSelectedCategory) 
-                : allCategory);
+            if ((_beatmapIndex.GetVisibleCategories().FirstOrDefault((BeatmapIndex.Category c) => c.Name == FileStorage.beatmapOptions.arcadeSelectedCategory) is Category ctg) 
+                && ctg != null)
+            {
+                return ctg;
+            }
+            return allCategory;
         }
     }
 }

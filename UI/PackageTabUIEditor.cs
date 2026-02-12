@@ -19,10 +19,12 @@ namespace CustomBeatmaps.UI
                     },
                     () =>
                     {
-                        GUILayout.TextArea("GUIDE:\n" +
-                                       "1) Create a beatmap in OSU following this tutorial: https://github.com/Ratismal/CustomBeats/blob/master/creation.md\n" +
-                                       "2) It should appear in this screen at the top. Open to test it.\n" +
-                                       "3) While testing, the beatmap should automatically reload when you make changes and save in OSU"
+                        GUILayout.TextArea(
+                                        "GUIDE UNDER CONSTRUCTION!!! (Check Discord)\n",
+                                        "CURRENT WORKING MAPPING TOOLS:\n" +
+                                        "https://github.com/Splash02/CBM-Editor (unofficial editor)\n" +
+                                        "https://github.com/ErikGXDev/UnbeatableOsuEditor (osu! lazer ruleset)\n" +
+                                        "https://osu.ppy.sh/home/download (osu STABLE exclusive!!!)"
                             );
                         MetadataUI.Render(_selectedBeatmap);
                         if (GUILayout.Button($"Init Editor Packages"))

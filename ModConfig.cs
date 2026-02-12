@@ -37,10 +37,6 @@ namespace CustomBeatmaps
         /// The local user "key" for high score submissions
         /// </summary>
         public string UserUniqueIdFile = TryFindOtherGame("CustomBeatmapsV3-Data/.USER_ID", out var file) ? file : "CustomBeatmapsV4-Data/.USER_ID";
-        /// <summary>
-        /// A line separated list of all beatmaps we've tried playing
-        /// </summary>
-        public string PlayedBeatmapList = "CustomBeatmapsV4-Data/.played_beatmaps";
         public bool ShowHiddenStuff = false;
 
 

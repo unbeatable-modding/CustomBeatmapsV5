@@ -5,13 +5,6 @@ using CustomBeatmaps.CustomData;
 
 namespace CustomBeatmaps.CustomPackages
 {
-    public enum PackageType
-    {
-        Local,
-        Server,
-        Temp
-    }
-
     public abstract class CustomPackage
     {
 
@@ -45,10 +38,7 @@ namespace CustomBeatmaps.CustomPackages
             set => _artists = (() => value);
         }
 
-        public CustomPackage() : this(Guid.Empty)
-        {
-            //GUID = Guid.Empty;
-        }
+        public CustomPackage() : this(Guid.Empty) { }
         public CustomPackage(Guid guid)
         {
             GUID = guid;
@@ -74,7 +64,6 @@ namespace CustomBeatmaps.CustomPackages
         public virtual ModdedBeatmapInfo[] CustomBeatmaps => SongDatas.SelectMany(p => p.BeatmapInfos).ToArray();
 
         public List<SongData> SongDatas;
-        public abstract PackageType PkgType { get; }
 
         public BeatmapDownloadStatus DownloadStatus; // Kinda jank since this should only be for servers, but whatever.
         public bool New { get; set; }

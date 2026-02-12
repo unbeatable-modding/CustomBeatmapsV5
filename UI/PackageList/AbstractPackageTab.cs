@@ -47,7 +47,8 @@ namespace CustomBeatmaps.UISystem
         protected Action[] RightRenders;
         protected string _searchQuery;
 
-
+        // NOTE: this is a terrible way of doing things
+        protected bool _didFirstReload = false;
 
         public AbstractPackageTab(PackageManagerGeneric<P> manager)
         {
@@ -59,8 +60,8 @@ namespace CustomBeatmaps.UISystem
         {
             Manager.PackageUpdated += () =>
             {
-                _pkgHeaders = Manager.Packages;
-                SortPackages();
+                //_pkgHeaders = Manager.Packages;
+                //SortPackages();
                 Reload(true);
             };
 
@@ -130,6 +131,7 @@ namespace CustomBeatmaps.UISystem
                 return;
             }
 
+            _didFirstReload = true;
             MapPackages();
         }
         protected virtual void SortPackages()
@@ -173,7 +175,7 @@ namespace CustomBeatmaps.UISystem
 
             _selectedBeatmap = _selectedPackage.BeatmapDatas[SelectedBeatmapIndex];
 
-            PreviewAudio();
+            CustomBeatmapsUI.PreviewCurrentAudio();
 
             return true;
         }
@@ -219,7 +221,6 @@ namespace CustomBeatmaps.UISystem
                     if (PlayButtonUI.Render("Play", $"{_selectedBeatmap.SongName}: {_selectedBeatmap.Difficulty}"))
                     {
                         // Play a local beatmap
-                        CustomBeatmaps.PlayedPackageManager.RegisterPlay(_selectedPackage.BaseDirectory);
                         RunSong();
                     }
                 }
@@ -231,12 +232,12 @@ namespace CustomBeatmaps.UISystem
         }
         public virtual void Render(Action onRenderAboveList)
         {
-            var loadState = LoadState;
-            if (loadState.Loading)
+            //var loadState = LoadState;
+            if (LoadState.Loading || !_didFirstReload)
             {
                 onRenderAboveList();
-                float p = (float)loadState.Loaded / loadState.Total;
-                ProgressBarUI.Render(p, $"Loaded {loadState.Loaded} / {loadState.Total}", GUILayout.ExpandWidth(true), GUILayout.Height(32));
+                float p = (float)LoadState.Loaded / LoadState.Total;
+                ProgressBarUI.Render(p, $"Loaded {LoadState.Loaded} / {LoadState.Total}", GUILayout.ExpandWidth(true), GUILayout.Height(32));
                 return;
             }
 
@@ -268,14 +269,14 @@ namespace CustomBeatmaps.UISystem
 
         public void PreviewAudio()
         {
-            if (LoadingArcade)
+            if (LoadingArcade || !_didFirstReload)
                 return;
             if (_selectedBeatmap.BeatmapPointer != null)
             {
                 if (_selectedBeatmap.SongPath != null)
                 {
                     var previewsong = SongDatabase.GetBeatmapItemByPath(_selectedBeatmap.SongPath);
-                    BGM.PlaySongPreview(previewsong, _selectedBeatmap.Tags.PreviewTime);
+                    BGM.PlaySongPreview(previewsong, _selectedBeatmap.PreviewTime);
                 }
             }
         }

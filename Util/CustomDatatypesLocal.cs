@@ -9,20 +9,8 @@ namespace CustomBeatmaps.Util
 {
     public class CustomPackageLocal : CustomPackage
     {
-        public CustomPackageLocal() : base() { }
+        public CustomPackageLocal() : this(Guid.Empty) { }
         public CustomPackageLocal(Guid guid) : base(guid) { }
-        
-
-        /*
-        public override List<string> Difficulties
-        {
-            get
-            {
-                return BeatmapDatas.Select(b => b.Difficulty).ToList();
-            }
-        }
-        */
-        public override PackageType PkgType => PackageType.Local;
 
         public override string ToString()
         {
@@ -55,6 +43,8 @@ namespace CustomBeatmaps.Util
         public HashSet<string> Attributes;
 
         public int PreviewTime;
+
+        public string CoverArtArtist;
     }
 
     

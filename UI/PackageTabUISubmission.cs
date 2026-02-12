@@ -115,7 +115,6 @@ namespace CustomBeatmaps.UI
                                     {
                                         if (buttonPressed)
                                         {
-                                            CustomBeatmaps.PlayedPackageManager.RegisterPlay(_selectedPackage.BaseDirectory);
                                             RunSong();
 
                                         }

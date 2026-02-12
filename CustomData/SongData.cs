@@ -137,7 +137,8 @@ namespace CustomBeatmaps.CustomData
 
             // new stuff
             //Traverse.Field("IsCustomSong").SetValue(true);
-            Traverse.Field("coverArtArtist").SetValue(string.Empty);
+            Traverse.Field("previewStartTime").SetValue(bmap.PreviewTime);
+            Traverse.Field("coverArtArtist").SetValue(bmap.CoverArtArtist);
 
             AccessTools.PropertySetter(typeof(Song), nameof(Song.IsCustomSong))
                     .Invoke(Song, new object[] { true });
@@ -146,7 +147,7 @@ namespace CustomBeatmaps.CustomData
             AccessTools.PropertySetter(typeof(Song), nameof(Song.CustomAudioFile))
                     .Invoke(Song, new object[] { bmap.AudioPath });
 
-            Traverse.Field("previewStartTime").SetValue(bmap.Tags.PreviewTime);
+            
             //Traverse.Method("set_IsCustomSong").Field("value").SetValue(true);
             //Traverse.Property("set_CustomPath").Field("value").SetValue(bmap.DirectoryPath);
             //Traverse.Property("set_CustomAudioFile").Field("value").SetValue(bmap.AudioPath);
@@ -221,6 +222,11 @@ namespace CustomBeatmaps.CustomData
                 texture.LoadImage(bytes);
                 var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
                 traverse.Field("coverArt").SetValue(sprite);
+            }
+            else
+            {
+                // funny default image
+                traverse.Field("coverArt").SetValue(BeatmapIndex.CachedDefaultIndex.CustomsJacket);
             }
         }
     }

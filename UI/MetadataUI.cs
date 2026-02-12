@@ -10,6 +10,7 @@ namespace CustomBeatmaps.UI
     {
         private static string Level;
         private static string FlavorText;
+        private static string CoverArtArtist;
         private static string PreviewTime;
         private static bool BlindTurn;
         private static bool MotionWarning;
@@ -41,6 +42,13 @@ namespace CustomBeatmaps.UI
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
+            GUILayout.Label("Cover Artist: ", GUILayout.ExpandWidth(false));
+            var coverArtArtist = GUILayout.TextArea(CoverArtArtist);
+            if (coverArtArtist != CoverArtArtist)
+                CoverArtArtist = coverArtArtist;
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             var bt = GUILayout.Toggle(BlindTurn, "Blind Turn", GUILayout.ExpandWidth(false));
             if (bt != BlindTurn)
@@ -61,17 +69,18 @@ namespace CustomBeatmaps.UI
             if (GUILayout.Button($"UPDATE METADATA"))
             {
                 Int32.TryParse(Level, out var lvlInt);
-                bmap.Tags.Level = lvlInt;
-                bmap.Tags.FlavorText = FlavorText;
+                bmap.Level = lvlInt;
+                bmap.FlavorText = FlavorText;
+                bmap.CoverArtArtist = CoverArtArtist;
                 Int32.TryParse(PreviewTime, out var previewInt);
-                bmap.Tags.PreviewTime = previewInt;
+                bmap.PreviewTime = previewInt;
                 if (BlindTurn)
-                    bmap.Tags.Attributes.Add("BT");
+                    bmap.Attributes.Add("BT");
                 if (MotionWarning)
-                    bmap.Tags.Attributes.Add("MW");
+                    bmap.Attributes.Add("MW");
                 if (FourKey)
-                    bmap.Tags.Attributes.Add("4K");
-                BeatmapHelper.SetBeatmapJson(bmap.BeatmapPointer.text, bmap.Tags, bmap.BeatmapPath);
+                    bmap.Attributes.Add("4K");
+                bmap.SetBeatmapJson();
             }
         }
 
@@ -79,7 +88,8 @@ namespace CustomBeatmaps.UI
         {
             Level = bmap.Level.ToString();
             FlavorText = bmap.FlavorText;
-            PreviewTime = bmap.Tags.PreviewTime.ToString();
+            CoverArtArtist = bmap.CoverArtArtist;
+            PreviewTime = bmap.PreviewTime.ToString();
             BlindTurn = bmap.Attributes.Contains("BT");
             MotionWarning = bmap.Attributes.Contains("MW");
             FourKey = bmap.Attributes.Contains("4K");

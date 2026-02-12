@@ -39,7 +39,6 @@ namespace CustomBeatmaps
         // TODO: MAKE WORK
         //public static PackageManagerSubmission LocalSubmissionPackages { get; private set; }
         public static PackageManagerLocal LocalEditorPackages { get; private set; }
-        public static PlayedPackageManager PlayedPackageManager { get; private set; }
         public static ServerHighScoreManager ServerHighScoreManager { get; private set; }
         public static BeatmapDownloader Downloader { get; private set; }
         public static GameMemory Memory { get; private set; }
@@ -79,7 +78,6 @@ namespace CustomBeatmaps
                 LocalServerPackages.SetFolder(config.ServerPackagesDir, new CCategory("server"));
                 //LocalSubmissionPackages.SetFolder(config.TemporarySubmissionPackageFolder, new CCategory(8));
                 LocalEditorPackages.SetFolder(config.OsuSongsOverrideDirectory, new CCategory("editor"));
-                PlayedPackageManager = new PlayedPackageManager(config.PlayedBeatmapList);
             });
             ConfigHelper.LoadConfig("CustomBeatmapsV4-Data/custombeatmaps_backend.json", () => new BackendConfig(), config => BackendConfig = config);
 
@@ -123,11 +121,10 @@ namespace CustomBeatmaps
                 typeof(FlipModePatch),
                 typeof(DisableRewiredMouseInputPatch),
                 typeof(ArcadeOverridesPatch),
-                //typeof(AudioPatch),
                 typeof(UIButtonPatch),
                 typeof(LongPathPatch),
                 typeof(HighScorePatch),
-                typeof(GameFixesPatch)
+                typeof(BaseGameFixesPatch)
             };
             foreach (var toPatch in classesToPatch)
             {

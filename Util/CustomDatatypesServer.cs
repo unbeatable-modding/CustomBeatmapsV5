@@ -9,10 +9,9 @@ namespace CustomBeatmaps.Util
 {
     public class CustomPackageServer : CustomPackage
     {
-        public CustomPackageServer() : base() { }
+        public CustomPackageServer() : this(Guid.Empty) { }
         public CustomPackageServer(Guid guid) : base(guid) { }
 
-        public override PackageType PkgType => PackageType.Server;
         public override string ToString()
         {
             return $"{{{GUID}: [\n  {SongDatas.ToArray().Select(song =>

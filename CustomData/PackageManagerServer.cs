@@ -43,8 +43,6 @@ namespace CustomBeatmaps.CustomData
                         KillAllWatchers();
                         _watchers.Add(FileWatchHelper.WatchFolder(_folder, false, OnFileChange));
                     }
-                    // Don't fetch for beta update
-                    //_onlinePackages = new(); // Online not finished :(
                     _onlinePackages = TEMPOnlineHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
                     //var packages = PackageServerHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
                     var packages = TEMPOnlineHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
@@ -67,8 +65,10 @@ namespace CustomBeatmaps.CustomData
                     }
                     InitialLoadState.Loading = false;
                 }
+                //Action doAfterRefresh = () => { InitialLoadState.Loading = false; };
+                ArcadeHelper.ReloadArcadeList(PackageUpdated);
 
-                ArcadeHelper.ReloadArcadeList();
+
                 ScheduleHelper.SafeInvoke(() =>
                     {
                         Songs.ForEach(s =>
@@ -77,7 +77,8 @@ namespace CustomBeatmaps.CustomData
                                 s.Song.GetTexture();
                         });
                     });
-                
+                //Task.Run(PackageUpdated).Wait();//.ContinueWith(res =>  InitialLoadState.Loading = false);
+                //InitialLoadState.Loading = false;
             }).Start();
         }
 
@@ -103,7 +104,6 @@ namespace CustomBeatmaps.CustomData
                 if (!Directory.Exists(folderPath))
                 {
                     // Reload here as a failsafe
-                    //PackageUpdated?.Invoke();
                     ScheduleHelper.SafeInvoke(() => ArcadeHelper.ReloadArcadeList(PackageUpdated));
                     return;
                 }
@@ -157,7 +157,6 @@ namespace CustomBeatmaps.CustomData
                                     _downloadedFolders.Add(Path.GetFullPath(package.BaseDirectory));
                             }
                         }
-                        //PackageUpdated?.Invoke();
                         ScheduleHelper.SafeInvoke(() => ArcadeHelper.ReloadArcadeList(PackageUpdated));
                     }
                     else

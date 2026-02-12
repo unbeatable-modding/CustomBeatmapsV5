@@ -168,7 +168,7 @@ namespace CustomBeatmaps.Util
         public static bool TryLoadOnlineServerPackage(TEMPOnlinePackage oPkg, out CustomPackageServer package, CCategory category,
     Action<BeatmapException> onBeatmapFail = null, Func<Dictionary<string, CustomPackageServer>> GUIDs = null)
         {
-            package = new CustomPackageServer();
+            //package = new CustomPackageServer();
 
             // ???
             if (GUIDs != null && GUIDs.Invoke().ContainsKey(oPkg.FilePath))
@@ -179,7 +179,7 @@ namespace CustomBeatmaps.Util
             }
 
             var songs = new Dictionary<string, SongData>();
-
+            package = new CustomPackageServer(Guid.NewGuid());
             package.GUID = Guid.NewGuid();
             package.ServerURL = oPkg.FilePath;
             //package.BaseDirectory = oPkg.ServerURL;
