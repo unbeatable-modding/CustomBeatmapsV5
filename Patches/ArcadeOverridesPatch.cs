@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using TMPro;
 using UnityEngine;
+using static Arcade.UI.SongSelect.ArcadeSongDatabase;
 using static Rhythm.BeatmapIndex;
 using static Rhythm.RhythmController;
 
@@ -70,7 +71,7 @@ namespace CustomBeatmaps.Patches
                     ) // Don't add the "custom" category
                 .RemoveInstructions(10)
                 .MatchForward(false,
-                    //new CodeMatch(OpCodes.Ldarg_0),
+                    // Fixes "SelectedCategory = ((_beatmapIndex.GetVisibleCategories().FirstOrDefault((BeatmapIndex.Category c) => c.Name == FileStorage.beatmapOptions.arcadeSelectedCategory) != null) ? _beatmapIndex.GetVisibleCategories().FirstOrDefault() : allCategory);"
                     new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(ArcadeSongDatabase), "_beatmapIndex")),
                     new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(BeatmapIndex), nameof(BeatmapIndex.GetVisibleCategories))),
                     new CodeMatch(OpCodes.Ldsfld),
@@ -170,6 +171,26 @@ namespace CustomBeatmaps.Patches
                 return ctg;
             }
             return allCategory;
+        }
+
+        [HarmonyPatch(typeof(ArcadeSongDatabase), "PlaySong")]
+        [HarmonyPrefix]
+        public static bool RememberLastSong(BeatmapItem beatmapItem)
+        {
+            CustomBeatmaps.Memory.lastSelectedSong = beatmapItem.Path;
+            return true;
+        }
+
+        [HarmonyPatch(typeof(ArcadeSongList), "GetBaseSongIndex")]
+        [HarmonyPrefix]
+        public static bool LoadLastSong(ref int defaultSongIndex)
+        {
+            var index = ArcadeSongDatabase.Instance.IndexOfSong(CustomBeatmaps.Memory.lastSelectedSong);
+            if (index > 0)
+            {
+                defaultSongIndex = index;
+            }
+            return true;
         }
     }
 }

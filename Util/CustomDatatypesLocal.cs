@@ -42,7 +42,7 @@ namespace CustomBeatmaps.Util
         //public Dictionary<string, bool> Attributes;
         public HashSet<string> Attributes;
 
-        public int PreviewTime;
+        public float PreviewTime;
 
         public string CoverArtArtist;
     }

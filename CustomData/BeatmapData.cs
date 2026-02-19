@@ -90,7 +90,7 @@ namespace CustomBeatmaps.CustomData
             get => Tags.CoverArtArtist;
             set => Tags.CoverArtArtist = value;
         }
-        public int PreviewTime
+        public float PreviewTime
         {
             get
             {
@@ -174,14 +174,13 @@ namespace CustomBeatmaps.CustomData
         /// <summary>
         /// BeatmapData from Local *.bmap files
         /// </summary>
-        public BeatmapData(Guid guid, int offset, InternalDifficulty internalDifficulty, string bmapPath, CCategory category, int previewTime = 0)
+        public BeatmapData(Guid guid, int offset, InternalDifficulty internalDifficulty, string bmapPath, CCategory category)
         {
             BeatmapPath = bmapPath;
             Category = category;
             DirectoryPath = Path.GetDirectoryName(bmapPath);
             GUID = guid;
             Offset = offset;
-            //PreviewTime = previewTime;
 
             string[] difficultyIndex = ["Beginner", "Easy", "Normal", "Hard", "UNBEATABLE", "Star"];
             InternalDifficulty = difficultyIndex[(int)internalDifficulty];

@@ -113,6 +113,9 @@ namespace CustomBeatmaps.Util
 
                 JeffBezosController.instance.DisableUIInputs();
                 JeffBezosController.returnFromArcade = true;
+
+                CustomBeatmaps.Memory.lastSelectedSong = bmap.SongPath;
+
                 LevelManager.LoadCustomArcadeLevel(bmap.SongBackRef, bmap.InternalDifficulty);
             }
         }
@@ -121,8 +124,9 @@ namespace CustomBeatmaps.Util
             UIButtonPatch.silent = true;
             if (ArcadeSongDatabase.SelectedCategory.Name != "all")
                 SongDatabase.SetCategory(bmap.Category.InternalCategory);
-            SongList.SetSelectedSongIndex(SongDatabase.IndexOfSong(bmap.SongPath));
             SongDatabase.SetDifficulty(bmap.InternalDifficulty);
+            SongList.SetSelectedSongIndex(SongDatabase.IndexOfSong(bmap.SongPath));
+            FileStorage.SaveOptions();
             //UIButtonPatch.silent = false;
         }
         public static void PlaySongEdit(BeatmapData bmap, bool enableCountdown = false)

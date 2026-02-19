@@ -20,7 +20,7 @@ namespace CustomBeatmaps.UI
                     () =>
                     {
                         GUILayout.TextArea(
-                                        "GUIDE UNDER CONSTRUCTION!!! (Check Discord)\n",
+                                        "GUIDE UNDER CONSTRUCTION!!! (Check Discord)\n" +
                                         "CURRENT WORKING MAPPING TOOLS:\n" +
                                         "https://github.com/Splash02/CBM-Editor (unofficial editor)\n" +
                                         "https://github.com/ErikGXDev/UnbeatableOsuEditor (osu! lazer ruleset)\n" +

@@ -72,8 +72,8 @@ namespace CustomBeatmaps.UI
                 bmap.Level = lvlInt;
                 bmap.FlavorText = FlavorText;
                 bmap.CoverArtArtist = CoverArtArtist;
-                Int32.TryParse(PreviewTime, out var previewInt);
-                bmap.PreviewTime = previewInt;
+                float.TryParse(PreviewTime, out var previewFlt);
+                bmap.PreviewTime = previewFlt;
                 if (BlindTurn)
                     bmap.Attributes.Add("BT");
                 if (MotionWarning)

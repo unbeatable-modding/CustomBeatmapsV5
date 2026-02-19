@@ -14,6 +14,8 @@ namespace CustomBeatmaps
         public bool OneLifeMode = false;
         public bool FlipMode = false;
 
+        public string lastSelectedSong;
+
         public static GameMemory Load(string path)
         {
             if (File.Exists(path))
