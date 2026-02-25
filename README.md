@@ -4,7 +4,7 @@ _Bigger, Bolder, Beatable!_
 
 ### This is an UNOFFICIAL mod for UNBEATABLE that lets you play and create custom beatmaps.
 
-Custom Beatmaps Mod for UNBEATABLE `V1.7.1` with ONLINE mode and HIGH SCORES _(this time for real!)_
+Custom Beatmaps Mod for UNBEATABLE `V1.7.3` with ONLINE mode
 
 **[Visit our Discord](https://discord.gg/XzqMhRMmhC)**
 

@@ -6,7 +6,7 @@
 	<AssemblyName>unbeatable-modding.unbeatableDemo.CustomBeatmapsV5</AssemblyName>
 	<Product>Custom Beatmaps V5</Product>
 	<AssemblyName>CustomBeatmapsV5</AssemblyName>
-	<Version>5.0.8</Version>
+	<Version>5.0.9</Version>
 	<RootNamespace>CustomBeatmaps</RootNamespace>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<LangVersion>latest</LangVersion>
