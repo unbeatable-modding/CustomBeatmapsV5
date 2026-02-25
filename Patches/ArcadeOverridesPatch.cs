@@ -173,24 +173,5 @@ namespace CustomBeatmaps.Patches
             return allCategory;
         }
 
-        [HarmonyPatch(typeof(ArcadeSongDatabase), "PlaySong")]
-        [HarmonyPrefix]
-        public static bool RememberLastSong(BeatmapItem beatmapItem)
-        {
-            CustomBeatmaps.Memory.lastSelectedSong = beatmapItem.Path;
-            return true;
-        }
-
-        [HarmonyPatch(typeof(ArcadeSongList), "GetBaseSongIndex")]
-        [HarmonyPrefix]
-        public static bool LoadLastSong(ref int defaultSongIndex)
-        {
-            var index = ArcadeSongDatabase.Instance.IndexOfSong(CustomBeatmaps.Memory.lastSelectedSong);
-            if (index > 0)
-            {
-                defaultSongIndex = index;
-            }
-            return true;
-        }
     }
 }
