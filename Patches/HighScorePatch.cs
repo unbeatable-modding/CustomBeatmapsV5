@@ -24,8 +24,8 @@ namespace CustomBeatmaps.Patches
             var code = new List<CodeInstruction>(instructions);
             try
             {
-                bool foundBeatmapParse = false, foundCustomArt = false, foundAttributeParse = false, foundAttrPoint = false;
-                int beatmapParseIndex = -1, customArtIndex = -1, attrributeParseIndex = -1;
+                bool foundFileRead = false, foundCustomArt = false, foundAttributeParse = false, foundAttrPoint = false;
+                int customArtIndex = -1, attrributeParseIndex = -1;
                 Label endOfCoverIfStatementLabel = il.DefineLabel(); // Labels are points in the code you can jump to
                 Label labelAttributesStart = il.DefineLabel();
 
@@ -58,29 +58,28 @@ namespace CustomBeatmaps.Patches
 
                 for (int i = 0; i < code.Count - 6; i++)
                 {
-                    // looking for "beatmap = BeatmapParser.ParseBeatmap(((ArcadeProgression)JeffBezosController.rhythmProgression).customChartPath);"
+                    // looking for "File.ReadAllText" so i can put LongPath in there (this is kinda redundant)
                     /*
                      IL CODE REFERENCE:
                         IL_0516: ldsfld class Rhythm.IProgression JeffBezosController::rhythmProgression
                         IL_051b: castclass Rhythm.ArcadeProgression
                         IL_0520: ldfld string Rhythm.ArcadeProgression::customChartPath
-                        IL_0525: call class Rhythm.Beatmap Rhythm.BeatmapParser::ParseBeatmap(string)
-                        IL_052a: stloc.s 6
+                        IL_0525: call string [netstandard]System.IO.File::ReadAllText(string)
                      */
-                    if (!foundBeatmapParse)
+                    if (!foundFileRead)
                     {
-                        foundBeatmapParse = (code[i].opcode == OpCodes.Ldsfld &&
+                        foundFileRead = (code[i].opcode == OpCodes.Ldsfld &&
                         object.ReferenceEquals(code[i].operand, AccessTools.Field(typeof(JeffBezosController), nameof(JeffBezosController.rhythmProgression))) &&
                         code[i + 1].opcode == OpCodes.Castclass &&
                         code[i + 2].opcode == OpCodes.Ldfld &&
                         object.ReferenceEquals(code[i + 2].operand, AccessTools.Field(typeof(ArcadeProgression), nameof(ArcadeProgression.customChartPath))) &&
                         code[i + 3].opcode == OpCodes.Call &&
-                        object.ReferenceEquals(code[i + 3].operand, AccessTools.Method(typeof(BeatmapParser), nameof(BeatmapParser.ParseBeatmap), new Type[] { typeof(string) })) &&
-                        code[i + 4].opcode == OpCodes.Stloc_S
+                        object.ReferenceEquals(code[i + 3].operand, AccessTools.Method(typeof(System.IO.File), nameof(System.IO.File.ReadAllText), new Type[] { typeof(string) }))
                         );
 
-                        if (foundBeatmapParse)
-                            beatmapParseIndex = i + 3;
+                        if (foundFileRead)
+                            code[i + 3] = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Pri.LongPath.File), nameof(Pri.LongPath.File.ReadAllText), new Type[] { typeof(string) }));
+                        //beatmapParseIndex = i + 3;
 
                         // transpiles into "beatmap = BeatmapParser.ParseBeatmap(Pri.LongPath.File.ReadAllText(((ArcadeProgression)JeffBezosController.rhythmProgression).customChartPath))"
                     }
@@ -156,11 +155,11 @@ namespace CustomBeatmaps.Patches
 
                 //foundAttrPoint = false;
 
-                if (!foundBeatmapParse || !foundCustomArt || !foundAttributeParse || !foundAttrPoint)
+                if (!foundFileRead || !foundCustomArt || !foundAttributeParse || !foundAttrPoint)
                 {
                     string[] nulls = [];
-                    if (!foundBeatmapParse)
-                        nulls.Append(nameof(foundBeatmapParse));
+                    if (!foundFileRead)
+                        nulls.Append(nameof(foundFileRead));
                     if (!foundCustomArt)
                         nulls.Append(nameof(foundCustomArt));
                     if (!foundAttributeParse)
@@ -174,7 +173,6 @@ namespace CustomBeatmaps.Patches
                 // NOTE TO SELF: insert last to first or index will change and break everything
                 code.InsertRange(attrributeParseIndex, instructionsToInsertForAttributes);
                 code.InsertRange(customArtIndex, instructionsToInsertForCover);
-                code.InsertRange(beatmapParseIndex, instructionsToReadBeatmapFile);
 
                 return code;
             }

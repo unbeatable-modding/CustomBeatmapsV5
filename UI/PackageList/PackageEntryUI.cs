@@ -92,7 +92,7 @@ namespace CustomBeatmaps.UI.PackageList
                         statusLabel = "<color=blue>Downloading...</color>";
                         break;
                     case BeatmapDownloadStatus.NotDownloaded:
-                        statusLabel = "<color=gray><i>Online</i></color>";
+                        statusLabel = "<color=white><i>Online</i></color>";
                         break;
                 }
                 GUI.Label(new Rect(br.xMax - DownloadStatusRightPad, br.y, DownloadStatusRightPad, br.height), statusLabel);

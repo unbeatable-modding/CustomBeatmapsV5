@@ -69,24 +69,7 @@ namespace CustomBeatmaps.Patches
                     new CodeMatch(OpCodes.Ldarg_0),
                     new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(ArcadeSongDatabase), "_loadCustomSongs"))
                     ) // Don't add the "custom" category
-                .RemoveInstructions(10)
-                .MatchForward(false,
-                    // Fixes "SelectedCategory = ((_beatmapIndex.GetVisibleCategories().FirstOrDefault((BeatmapIndex.Category c) => c.Name == FileStorage.beatmapOptions.arcadeSelectedCategory) != null) ? _beatmapIndex.GetVisibleCategories().FirstOrDefault() : allCategory);"
-                    new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(ArcadeSongDatabase), "_beatmapIndex")),
-                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(BeatmapIndex), nameof(BeatmapIndex.GetVisibleCategories))),
-                    new CodeMatch(OpCodes.Ldsfld),
-                    new CodeMatch(OpCodes.Dup)
-                )
-                .RemoveInstructions(19)
-                .InsertAndAdvance(
-                    [
-                        //new CodeInstruction(OpCodes.Ldarg_0),
-                        new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(ArcadeSongDatabase), "_beatmapIndex")),
-                        new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(ArcadeSongDatabase), "allCategory")),
-                        new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ArcadeOverridesPatch), nameof(ArcadeOverridesPatch.LazyCategoryFix)))
-                    ]
-                );
-
+                .RemoveInstructions(10);
             return codeMatcher.Instructions();
         }
 
@@ -160,17 +143,6 @@ namespace CustomBeatmaps.Patches
             CustomBeatmaps.LocalUserPackages.WaitNoBringThemBack();
             CustomBeatmaps.LocalEditorPackages.WaitNoBringThemBack();
             murdered = false;
-        }
-
-        // this is a base game issue...
-        private static Category LazyCategoryFix(BeatmapIndex _beatmapIndex, Category allCategory)
-        {
-            if ((_beatmapIndex.GetVisibleCategories().FirstOrDefault((BeatmapIndex.Category c) => c.Name == FileStorage.beatmapOptions.arcadeSelectedCategory) is Category ctg) 
-                && ctg != null)
-            {
-                return ctg;
-            }
-            return allCategory;
         }
 
     }

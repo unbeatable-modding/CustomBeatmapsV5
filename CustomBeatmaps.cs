@@ -124,7 +124,8 @@ namespace CustomBeatmaps
                 typeof(UIButtonPatch),
                 typeof(LongPathPatch),
                 typeof(HighScorePatch),
-                typeof(BaseGameFixesPatch)
+                typeof(BaseGameFixesPatch),
+                typeof(GameplayPatch)
             };
             foreach (var toPatch in classesToPatch)
             {

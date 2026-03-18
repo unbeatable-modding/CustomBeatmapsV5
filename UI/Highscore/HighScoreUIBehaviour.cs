@@ -99,7 +99,7 @@ namespace CustomBeatmaps.UI.Highscore
                     }
 
                     // Hide mode
-                    GUILayout.Label("<size=12><color=gray>F5: Hide</color></size>");
+                    GUILayout.Label("<size=12><color=grey>F5: Hide</color></size>");
 
                     GUILayout.EndVertical();
 
