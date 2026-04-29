@@ -49,7 +49,8 @@ namespace CustomBeatmaps
             // Get the directory of the custom songs
             string[] gameDirs = [
                 $"{dataDir}/UNBEATABLE [white label]/{path}",
-                $"{dataDir}/UNBEATABLE Demo/{path}"
+                $"{dataDir}/UNBEATABLE Demo/{path}",
+                $"{Application.persistentDataPath}/CustomSongs",
                 ];
             
             foreach (string dir in gameDirs)

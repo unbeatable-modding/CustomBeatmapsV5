@@ -45,6 +45,15 @@ namespace CustomBeatmaps.Util
         public float PreviewTime;
 
         public string CoverArtArtist;
+
+        /// <summary>
+        /// Unity Scene song is playing on
+        /// </summary>
+        public string Stage = "TrainStationRhythm";
+
+        public TagData()
+        {
+        }
     }
 
     

@@ -20,13 +20,6 @@ namespace CustomBeatmaps.Util
     public class ArcadeHelper
     {
 
-        private static Traverse traverse = Traverse.Create(BeatmapIndex.defaultIndex);
-        private static List<string> songNames = traverse.Field("_songNames").GetValue<List<string>>();
-        private static List<Song> songs = traverse.Field("songs").GetValue<List<Song>>();
-        private static Dictionary<string, Song> _songs = traverse.Field("_songs").GetValue<Dictionary<string, Song>>();
-        private static List<Song> _visibleSongs = traverse.Field("_visibleSongs").GetValue<List<Song>>();
-        private static Dictionary<Category, List<Song>> _categorySongs = traverse.Field("_categorySongs").GetValue<Dictionary<Category, List<Song>>>();
-
         //static OsuBeatmapHotLoader HotLoader = new OsuBeatmapHotLoader();
         public static CustomBeatmapRoom[] Rooms
         {
@@ -162,7 +155,7 @@ namespace CustomBeatmaps.Util
         public static bool UsingHighScoreProhibitedAssists()
         {
             // We include flip mode because _potentially_ it might be used to make high notes easier to hit?
-            return (JeffBezosController.GetAssistMode() == 1) || GetSongSpeed(JeffBezosController.GetSongSpeed()) < 1 || (JeffBezosController.GetNoFail() == 1) || CustomBeatmaps.Memory.FlipMode;
+            return (JeffBezosController.GetAssistMode() == 1) || (JeffBezosController.GetNoFail() == 1) || CustomBeatmaps.Memory.FlipMode;
         }
 
         public struct CustomBeatmapRoom

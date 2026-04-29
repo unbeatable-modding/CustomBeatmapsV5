@@ -43,7 +43,8 @@ namespace CustomBeatmaps.CustomData
                         KillAllWatchers();
                         _watchers.Add(FileWatchHelper.WatchFolder(_folder, false, OnFileChange));
                     }
-                    _onlinePackages = TEMPOnlineHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
+                    //_onlinePackages = TEMPOnlineHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
+                    _onlinePackages = new(); // disabled again for now
                     //var packages = PackageServerHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
                     var packages = TEMPOnlineHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
                     {

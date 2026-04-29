@@ -112,6 +112,12 @@ namespace CustomBeatmaps.CustomData
             set => Tags.Attributes = value;
         }
 
+        public string Stage
+        {
+            get => Tags.Stage;
+            set => Tags.Stage = value;
+        }
+
         /// <summary>
         /// The Song's internal name + Difficulty (This is how the game checks for songs)
         /// </summary>
