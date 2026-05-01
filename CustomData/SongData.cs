@@ -130,7 +130,7 @@ namespace CustomBeatmaps.CustomData
         {
             Song = new CustomSong(InternalName, this);
             //Song.stageScene = "TrainStationRhythm";
-            Song.stageScene = bmap.Stage;
+            Song.stageScene = bmap.Stage ?? "TrainStationRhythm";
             Traverse = Traverse.Create(Song);
             Traverse.Field("visibleInArcade").SetValue(true);
             Traverse.Field("_category").SetValue(Category.InternalCategory);
