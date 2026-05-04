@@ -6,7 +6,7 @@
 	<AssemblyName>unbeatable-modding.unbeatableDemo.CustomBeatmapsV5</AssemblyName>
 	<Product>Custom Beatmaps V5</Product>
 	<AssemblyName>CustomBeatmapsV5</AssemblyName>
-	<Version>5.0.12</Version>
+	<Version>5.0.13</Version>
 	<RootNamespace>CustomBeatmaps</RootNamespace>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<LangVersion>latest</LangVersion>
@@ -20,7 +20,7 @@
   </PropertyGroup>
 	
   <ItemGroup>
-      <Reference Include="Assembly-CSharp">
+      <Reference Include="Assembly-CSharp" Publicize="true">
         <HintPath>$(ManagedPath)\Assembly-CSharp.dll</HintPath>
       </Reference>
       <Reference Include="BepInEx.Preloader">
@@ -51,6 +51,7 @@
 		<PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
 		<PackageReference Include="BepInEx.Core" Version="5.*" />
 		<PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+		<PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" />
 		<PackageReference Include="UnityEngine.Modules" Version="6000.3.6" IncludeAssets="compile" />
 		<PackageReference Include="Pri.LongPath" Version="2.0.53" />
 	</ItemGroup>

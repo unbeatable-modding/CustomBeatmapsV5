@@ -10,6 +10,10 @@ namespace CustomBeatmaps.UI
     public class PackageTabUIEditor : AbstractPackageTab<CustomPackageLocal>
     {
         private static bool _overrideCountdown = true;
+        private static bool _overrideStartTime = false;
+        private static string _startTimeM = "00";
+        private static string _startTimeS = "00";
+        private static string _startTimeMS = "000";
         public PackageTabUIEditor(PackageManagerLocal pkgManager) : base(pkgManager)
         {
             RightRenders = [
@@ -42,6 +46,17 @@ namespace CustomBeatmaps.UI
                     () =>
                     {
                         _overrideCountdown = GUILayout.Toggle(_overrideCountdown, "Do Countdown?");
+                        
+                        _overrideStartTime = GUILayout.Toggle(_overrideStartTime, "Override Start Time?");
+
+                        GUILayout.BeginHorizontal();
+                        _startTimeM = GUILayout.TextArea(_startTimeM, GUILayout.ExpandWidth(false));
+                        GUILayout.Label(":");
+                        _startTimeS = GUILayout.TextArea(_startTimeS, 2, GUILayout.ExpandWidth(false));
+                        GUILayout.Label(":");
+                        _startTimeMS = GUILayout.TextArea(_startTimeMS, 3, GUILayout.ExpandWidth(false));
+                        GUILayout.FlexibleSpace();
+                        GUILayout.EndHorizontal();
                         if (GUILayout.Button($"EXPORT"))
                         {
                             string exportFolder = Config.Mod.OsuExportDirectory;
@@ -62,7 +77,11 @@ namespace CustomBeatmaps.UI
         protected override void RunSong()
         {
             //Manager.ImmortalizeBeatmap(_selectedBeatmap.di);
-            ArcadeHelper.PlaySongEdit(_selectedBeatmap, _overrideCountdown);
+            float.TryParse(_startTimeM, out var startTimeM);
+            float.TryParse(_startTimeS, out var startTimeS);
+            float.TryParse(_startTimeMS, out var startTimeMS);
+            var startTime = (startTimeM * 60 * 1000) + (startTimeS * 1000) + startTimeMS;
+            ArcadeHelper.PlaySongEdit(_selectedBeatmap, _overrideCountdown, _overrideStartTime, startTime);
         }
 
     }

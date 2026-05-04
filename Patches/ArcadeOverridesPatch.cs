@@ -60,6 +60,8 @@ namespace CustomBeatmaps.Patches
         {
             var codeMatcher = new CodeMatcher(instructions);
 
+            EditorModePatch._editMode = false;
+
             codeMatcher
                 .MatchForward(false,
                     new CodeMatch(OpCodes.Call, AccessTools.PropertyGetter(typeof(UnityEngine.Application), nameof(UnityEngine.Application.isEditor)))

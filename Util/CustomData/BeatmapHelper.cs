@@ -31,15 +31,17 @@ namespace CustomBeatmaps.Util.CustomData
             return false;
         }
 
-        public static string GetBeatmapImage(string beatmapText, string beatmapPath)
+        public static bool GetBeatmapCover(string beatmapText, string beatmapPath, out string coverPath)
         {
             //var match = Regex.Match(beatmapText, $"Background and Video events\r?\n.*\"(.+?)\"");
             var match = Regex.Match(beatmapText, $"0,0,\"(.+?)\",0,0");
             if (match.Groups.Count > 1)
             {
-                return match.Groups[1].Value;
+                coverPath = match.Groups[1].Value;
+                return true;
             }
-            return null;
+            coverPath = null;
+            return false;
         }
 
         public static bool IsBeatmapFile(string beatmapPath)

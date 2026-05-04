@@ -24,7 +24,7 @@ namespace CustomBeatmaps
         /// <summary>
         /// Songs directory for your OSU install for the mod to access 
         /// </summary>& test
-        public string OsuSongsOverrideDirectory = null;
+        public string OsuSongsOverrideDirectory = $"{Application.persistentDataPath}/CustomSongsEditor";
         /// <summary>
         /// Directory (relative to UNBEATABLE) where your OSU file packages will export
         /// </summary>

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using UnityEngine;
 using static CustomBeatmaps.Util.CustomData.BeatmapHelper;
 using static CustomBeatmaps.Util.TEMPOnlineHelper;
@@ -279,7 +280,22 @@ namespace CustomBeatmaps.CustomData
                 Artist = GetBeatmapProp(text, "Artist", BeatmapPath);
                 Creator = GetBeatmapProp(text, "Creator", BeatmapPath);
 
-                CoverPath = GetBeatmapImage(text, BeatmapPath);
+                if (GetBeatmapCover(text, BeatmapPath, out var coverPath))
+                {
+                    CoverPath = coverPath;
+                }
+                else
+                {
+                    string[] defaults = ["cover.png", "cover.jpg", "cover.webp"];
+                    foreach (string s in defaults)
+                    {
+                        if (File.Exists($"{DirectoryPath}\\{s}")) {
+                            CoverPath = s;
+                            break;
+                        }
+                    }
+                }
+
 
                 var bmapVer = GetBeatmapProp(text, "Version", BeatmapPath);
                 Difficulty = bmapVer;

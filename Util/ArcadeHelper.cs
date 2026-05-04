@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Arcade.UI;
+using Arcade.UI.SongSelect;
+using CustomBeatmaps.CustomData;
+using CustomBeatmaps.Patches;
+using CustomBeatmaps.Util.CustomData;
+using FMODUnity;
 using HarmonyLib;
 using Rhythm;
-using Arcade.UI.SongSelect;
-using UnityEngine.SceneManagement;
-using Arcade.UI;
-using FMODUnity;
-using CustomBeatmaps.CustomData;
-using CustomBeatmaps.Util.CustomData;
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
-
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
+using static Arcade.UI.SongSelect.ArcadeSongDatabase;
 using static Rhythm.BeatmapIndex;
-using CustomBeatmaps.Patches;
 
 namespace CustomBeatmaps.Util
 {
@@ -95,6 +95,8 @@ namespace CustomBeatmaps.Util
         public static void PlaySong(BeatmapData bmap, string scene)
         {
             ForceSelectSong(bmap);
+
+
             var onSongPlaySound = Traverse.Create(SongDatabase).Field("onSongPlaySound").GetValue<EventReference>();
 
             if (bmap.BeatmapPointer != null)
@@ -122,9 +124,9 @@ namespace CustomBeatmaps.Util
             FileStorage.SaveOptions();
             //UIButtonPatch.silent = false;
         }
-        public static void PlaySongEdit(BeatmapData bmap, bool enableCountdown = false)
+        public static void PlaySongEdit(BeatmapData bmap, bool enableCountdown = true, bool enableStartTime = false, float startTime = 0f)
         {
-            //OsuEditorPatch.SetEditMode(true, enableCountdown, beatmap.Info.OsuPath, beatmap.Info.SongPath);
+            EditorModePatch.SetEditMode(true, enableCountdown, enableStartTime, startTime);
             PlaySong(bmap, DefaultBeatmapScene);
         }
 
@@ -155,7 +157,7 @@ namespace CustomBeatmaps.Util
         public static bool UsingHighScoreProhibitedAssists()
         {
             // We include flip mode because _potentially_ it might be used to make high notes easier to hit?
-            return (JeffBezosController.GetAssistMode() == 1) || (JeffBezosController.GetNoFail() == 1) || CustomBeatmaps.Memory.FlipMode;
+            return (JeffBezosController.GetAssistMode() == 1) || (JeffBezosController.GetNoFail() == 1) || CustomBeatmaps.Memory.FlipMode || EditorModePatch._editMode;
         }
 
         public struct CustomBeatmapRoom

@@ -22,6 +22,7 @@ using Path = Pri.LongPath.Path;
 namespace CustomBeatmaps
 {
     [BepInPlugin(modGUID, modName, modVer)]
+    [BepInProcess("UNBEATABLE.exe")]
     public class CustomBeatmaps : BaseUnityPlugin
     {
         private const string modGUID = PluginInfo.PLUGIN_GUID;
@@ -116,7 +117,6 @@ namespace CustomBeatmaps
             Type[] classesToPatch = {
                 typeof(CursorUnhidePatch),
                 typeof(DebugLogPatch),
-                //typeof(OsuEditorPatch),
                 typeof(OneLifeModePatch),
                 typeof(FlipModePatch),
                 typeof(DisableRewiredMouseInputPatch),
@@ -125,7 +125,8 @@ namespace CustomBeatmaps
                 typeof(LongPathPatch),
                 typeof(HighScorePatch),
                 typeof(BaseGameFixesPatch),
-                typeof(GameplayPatch)
+                typeof(GameplayPatch),
+                typeof(EditorModePatch)
             };
             foreach (var toPatch in classesToPatch)
             {
