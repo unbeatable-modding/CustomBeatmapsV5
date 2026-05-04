@@ -36,7 +36,7 @@ namespace CustomBeatmaps.UI
                 RenderSearchbar();
                 if (_pkgHeaders.Count != 0)
                     PackageListUI.Render($"Server Packages", _pkgHeaders, SelectedPackageIndex, SetSelectedPackageIndex);
-                AssistAreaUI.Render();
+                //AssistAreaUI.Render();
                 GUILayout.EndVertical();
             };
             

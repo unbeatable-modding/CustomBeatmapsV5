@@ -95,25 +95,9 @@ namespace CustomBeatmaps.Util
         public static void PlaySong(BeatmapData bmap, string scene)
         {
             ForceSelectSong(bmap);
-
-
-            var onSongPlaySound = Traverse.Create(SongDatabase).Field("onSongPlaySound").GetValue<EventReference>();
-
-            if (bmap.BeatmapPointer != null)
-            {
-                if (!onSongPlaySound.IsNull)
-                {
-                    RuntimeManager.PlayOneShot(onSongPlaySound);
-                }
-
-                JeffBezosController.instance.DisableUIInputs();
-                JeffBezosController.returnFromArcade = true;
-
-                CustomBeatmaps.Memory.lastSelectedSong = bmap.SongPath;
-
-                LevelManager.LoadCustomArcadeLevel(bmap.SongBackRef, bmap.InternalDifficulty);
-            }
+            SongDatabase.PlaySong(SongDatabase.GetBeatmapItemByPath(bmap.SongPath));
         }
+
         public static void ForceSelectSong(BeatmapData bmap)
         {
             UIButtonPatch.silent = true;
@@ -137,21 +121,6 @@ namespace CustomBeatmaps.Util
         public static HighScoreList LoadArcadeHighscores()
         {
             return HighScoreScreen.LoadHighScores(RhythmGameType.ArcadeMode);
-        }
-
-        public static float GetSongSpeed(int songSpeedIndex)
-        {
-            switch (songSpeedIndex)
-            {
-                case 0:
-                    return 1f;
-                case 1:
-                    return 0.5f;
-                case 2:
-                    return 2f;
-                default:
-                    throw new InvalidOperationException($"Invalid song speed index: {songSpeedIndex}");
-            }
         }
 
         public static bool UsingHighScoreProhibitedAssists()

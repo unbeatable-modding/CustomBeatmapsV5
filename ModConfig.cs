@@ -37,7 +37,7 @@ namespace CustomBeatmaps
         /// The local user "key" for high score submissions
         /// </summary>
         public string UserUniqueIdFile = TryFindOtherGame("CustomBeatmapsV3-Data/.USER_ID", out var file) ? file : "CustomBeatmapsV4-Data/.USER_ID";
-        public bool ShowHiddenStuff = false;
+        public bool ShowHiddenStuff;
 
 
         /// <param name="path"> Path relative to White Label directory </param>

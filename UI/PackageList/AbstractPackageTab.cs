@@ -202,7 +202,7 @@ namespace CustomBeatmaps.UISystem
                 GUILayout.EndHorizontal();
                 RenderSearchbar();
                 PackageListUI.Render($"Packages in {Folder}", _pkgHeaders, SelectedPackageIndex, SetSelectedPackageIndex);
-                AssistAreaUI.Render();
+                //AssistAreaUI.Render();
                 GUILayout.EndVertical();
             };
 

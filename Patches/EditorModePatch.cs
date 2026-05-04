@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEngine.UI.ContentSizeFitter;
 
 namespace CustomBeatmaps.Patches
 {
@@ -22,7 +21,8 @@ namespace CustomBeatmaps.Patches
         [HarmonyPrefix]
         static bool NoCountDown(ref bool countdownOn)
         {
-            countdownOn = _enableCountdown;
+            if (_editMode)
+                countdownOn = _enableCountdown;
             return true;
         }
 
@@ -38,7 +38,7 @@ namespace CustomBeatmaps.Patches
         /// 
         /// </summary>
         /// <param name="instance"></param>
-        /// <param name="seekTime"></param>
+        /// <param name="desiredTime">Time when the first notes should reach the player</param>
         /// <param name="buffer">Time before notes spawn</param>
         static void ForcedSeek(EventInstance instance, int desiredTime, int buffer = 1000)
         {

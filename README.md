@@ -4,15 +4,14 @@ _Bigger, Bolder, Beatable!_
 
 ### This is an UNOFFICIAL mod for UNBEATABLE that lets you play and create custom beatmaps.
 
-Custom Beatmaps Mod for UNBEATABLE `V1.7.3` with ONLINE mode
+Custom Beatmaps Mod for UNBEATABLE `V1.9.0`
 
 **[Visit our Discord](https://discord.gg/XzqMhRMmhC)**
 
 
 # Features
 - Play custom Beatmaps either locally or from our discord community!
-- Test your Beatmaps directly from their OSU directory without uploads or conversions
-- High scores for both Custom Beatmaps AND UNBEATABLE official beatmaps
+- Test your Beatmaps directly from their saved directory without uploads or conversions
 
 # Installation
 
@@ -23,6 +22,11 @@ Custom Beatmaps Mod for UNBEATABLE `V1.7.3` with ONLINE mode
     2) Right click `UNBEATABLE` and click `Properties`
     3) In the open panel, navigate to `LOCAL FILES`
     4) In the `LOCAL FILES` page, click `Browse...`
+    
+    If you're using a **Linux** distro, follow these extra steps
+
+    1) In the `General` page, navigate to `LAUNCH OPTIONS`
+    2) Set the launch options field to `WINEDLLOVERRIDES="winhttp=n,b %command%"` <br/>^(quotes may need to be removed depending on distro)^
 3) If you downloaded the old mod (CustomBeatmapsV2), there is no need for conversions, everything should work as it did before!
 4) If you downloaded the REALLY old mod (CustomBeatmapsV1), rename `USER_BEATMAPS` to `USER_PACKAGES`
 5) Drag and drop the contents of the mod's zip file directly into the Unbeatable game directory (same directory as `UNBEATABLE.exe`)
@@ -43,7 +47,7 @@ UNDER CONSTRUCTION!!! (Check discord for now)
 
 # Uploading Custom Beatmaps
 
-1) In the CustomBeatmaps screen, Open the `OSU!` tab and select your beatmap
+1) In the CustomBeatmaps screen, Open the `Editor` tab and select your beatmap
 2) Press `EXPORT`
 3) Check the `UNBEATABLE` game directory for a zip file of your beatmap
 4) Upload this beatmap to the [discord server](https://discord.gg/XzqMhRMmhC)'s #beatmap-verify channel. A mod will take a look, once your beatmap is approved & uploaded it will appear in the online view!
@@ -55,7 +59,7 @@ Screenshot from v3 but it's similar enough
 
 # Known Issues
 
-- Online will sometimes refuse to load songs without a restart
+- Online is not done yet
 
 ## Disclaimer
 

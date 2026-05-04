@@ -47,9 +47,8 @@ namespace CustomBeatmaps.UI
                     {
                         _overrideCountdown = GUILayout.Toggle(_overrideCountdown, "Do Countdown?");
                         
-                        _overrideStartTime = GUILayout.Toggle(_overrideStartTime, "Override Start Time?");
-
                         GUILayout.BeginHorizontal();
+                        _overrideStartTime = GUILayout.Toggle(_overrideStartTime, "Override Start Time?");
                         _startTimeM = GUILayout.TextArea(_startTimeM, GUILayout.ExpandWidth(false));
                         GUILayout.Label(":");
                         _startTimeS = GUILayout.TextArea(_startTimeS, 2, GUILayout.ExpandWidth(false));

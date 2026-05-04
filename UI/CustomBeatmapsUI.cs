@@ -77,6 +77,9 @@ namespace CustomBeatmaps.UI
             {
                 switch (tab)
                 {
+                    case Tab.Local:
+                        LocalPackageList.Render(() => RenderListTop(tab, setTab));
+                    break;
                     case Tab.Online:
                         try
                         {
@@ -86,10 +89,7 @@ namespace CustomBeatmaps.UI
                         {
                             LocalPackageList.Render(() => RenderListTop(tab, setTab));
                         }
-                        break;
-                    case Tab.Local:
-                        LocalPackageList.Render(() => RenderListTop(tab, setTab));
-                        break;
+                        break;    
                     case Tab.Edit:
                         EditorPackageList.Render(() => RenderListTop(tab, setTab));
                         break;
@@ -139,10 +139,10 @@ namespace CustomBeatmaps.UI
             {
                 switch (tabName)
                 {
-                    case Tab.Online:
-                        return "Online";
                     case Tab.Local:
                         return "Local";
+                    case Tab.Online:
+                        return "Online";
                     case Tab.Edit:
                         return "Editor";
                     default:

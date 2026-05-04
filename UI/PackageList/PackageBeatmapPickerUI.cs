@@ -83,9 +83,9 @@ namespace CustomBeatmaps.UI.PackageList
             if (selectedMapDifficulties.Count > 1)
             {
                 var bStyle = GUI.skin.button;
-                int bFontSize = (int)(bStyle.fontSize * 1.5);
+                //int bFontSize = (int)(bStyle.fontSize * 1.5);
                 GUILayout.BeginHorizontal();
-                int newDifficultySelect = Toolbar.Render(selectedDifficultyIndex, selectedMapDifficulties.Select(s => $"<size={bFontSize}>{s}</size>").ToArray());
+                int newDifficultySelect = Toolbar.Render(selectedDifficultyIndex, selectedMapDifficulties.ToArray());//(s => $"<size={bFontSize}>{s}</size>").ToArray());
                 GUILayout.EndHorizontal();
                 if (newDifficultySelect != -1 && newDifficultySelect != selectedDifficultyIndex)
                 {

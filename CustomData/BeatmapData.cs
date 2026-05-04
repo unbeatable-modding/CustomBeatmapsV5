@@ -280,7 +280,7 @@ namespace CustomBeatmaps.CustomData
                 Artist = GetBeatmapProp(text, "Artist", BeatmapPath);
                 Creator = GetBeatmapProp(text, "Creator", BeatmapPath);
 
-                if (GetBeatmapCover(text, BeatmapPath, out var coverPath))
+                if (GetBeatmapCover(text, BeatmapPath, out var coverPath) && File.Exists($"{DirectoryPath}\\{coverPath}"))
                 {
                     CoverPath = coverPath;
                 }

@@ -60,8 +60,6 @@ namespace CustomBeatmaps.Patches
         {
             var codeMatcher = new CodeMatcher(instructions);
 
-            EditorModePatch._editMode = false;
-
             codeMatcher
                 .MatchForward(false,
                     new CodeMatch(OpCodes.Call, AccessTools.PropertyGetter(typeof(UnityEngine.Application), nameof(UnityEngine.Application.isEditor)))
@@ -139,6 +137,9 @@ namespace CustomBeatmaps.Patches
                 if ((string)__args[0] != JeffBezosController.arcadeMenuScene)
                     return;
             }
+            if (__originalMethod.Name != "Finish")
+                EditorModePatch._editMode = false;
+
             if (!murdered)
                 return;
             CustomBeatmaps.LocalServerPackages.WaitNoBringThemBack();

@@ -11,7 +11,7 @@ namespace CustomBeatmaps.UI
     public enum Tab
     {
         //Online, Local, Submissions, Osu
-        Online, Local, Edit
+        Local, Online, Edit
     }
 
     public enum SortMode
