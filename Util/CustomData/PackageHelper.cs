@@ -260,10 +260,13 @@ namespace CustomBeatmaps.Util.CustomData
         /// </summary>
         /// <param name="folderPath">Directory to generate package from</param>
         /// <param name="recursive">Bool to check recursively for beatmaps</param>
-        public static Task<PackageCore> GeneratePackageCore(string folderPath, bool recursive = true)
+        public static Task<PackageCore> GeneratePackageCore(string folderPath, bool recursive = true, Guid? guid = null)
         {
             PackageCore pkgCore = new();
-            pkgCore.GUID = Guid.NewGuid();
+            if (guid != null)
+                pkgCore.GUID = (Guid)guid;
+            else
+                pkgCore.GUID = Guid.NewGuid();
             pkgCore.Songs = new();
 
             var subFiles = recursive ?
@@ -334,7 +337,7 @@ namespace CustomBeatmaps.Util.CustomData
             }
         }
 
-        public static async Task<bool> TryPopulatePackageCore(string packageFolder, string outerFolderPath, bool recursive = false)
+        public static async Task<bool> TryPopulatePackageCore(string packageFolder, string outerFolderPath, bool recursive = false, Guid? guid = null)
         {
             packageFolder = Path.GetFullPath(packageFolder);
             if (!Directory.EnumerateFiles(packageFolder, "*.osu", SearchOption.TopDirectoryOnly).Any() &&
@@ -345,7 +348,7 @@ namespace CustomBeatmaps.Util.CustomData
             try
             {
                 //var relative = Path.GetFullPath(packageFolder).Substring(outerFolderPath.Length + 1);
-                var pkgCore = await GeneratePackageCore(packageFolder, recursive);
+                var pkgCore = await GeneratePackageCore(packageFolder, recursive, guid);
                 await SerializeHelper.SaveJSONAsync($"{packageFolder}\\package.bmap", pkgCore);
                 //SerializeHelper.SaveJSON($"{packageFolder}\\package.bmap", pkgCore);
                 //return false;

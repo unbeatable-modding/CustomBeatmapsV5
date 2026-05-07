@@ -1,4 +1,5 @@
-﻿using CustomBeatmaps.CustomPackages;
+﻿using CustomBeatmaps.CustomData;
+using CustomBeatmaps.CustomPackages;
 using HarmonyLib;
 using Newtonsoft.Json;
 using System;
@@ -11,6 +12,8 @@ namespace CustomBeatmaps.Util
     {
         public CustomPackageServer() : this(Guid.Empty) { }
         public CustomPackageServer(Guid guid) : base(guid) { }
+
+        public OnlinePackage? OnlinePackage;
 
         public override string ToString()
         {
@@ -29,6 +32,7 @@ namespace CustomBeatmaps.Util
     /// <summary>
     /// Server Formatted Package
     /// </summary>
+    #nullable enable
     public struct OnlinePackage 
     {
         [JsonProperty("name")]
@@ -39,8 +43,8 @@ namespace CustomBeatmaps.Util
         public string Artists;
         [JsonProperty("guid")]
         public Guid GUID;
-        [JsonProperty("filePath")]
-        public string ServerURL;
+        //[JsonProperty("filePath")]
+        //public string ServerURL;
         [JsonProperty("time")]
         public DateTime UploadTime;
         [JsonProperty("songs")]
@@ -65,13 +69,16 @@ namespace CustomBeatmaps.Util
         public string Difficulty;
 
         [JsonProperty("internalDifficulty")]
-        public string InternalDifficulty;
+        public InternalDifficulty InternalDifficulty;
 
         [JsonProperty("audioFileName")]
         public string AudioFileName;
 
         [JsonProperty("tags")]
         public string Tags;
+
+        [JsonProperty("file")]
+        public string FilePath;
     }
 
     public struct ServerSubmissionPackage

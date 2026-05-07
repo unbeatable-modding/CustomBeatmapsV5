@@ -35,7 +35,7 @@ namespace CustomBeatmaps.CustomData
         Hard = 2,
         Expert = 3,
         UNBEATABLE = 4,
-        Star = 5
+        Star = 5,
     }
 
 }

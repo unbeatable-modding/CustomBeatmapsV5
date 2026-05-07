@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static CustomBeatmaps.Util.TEMPOnlineHelper;
 using Directory = Pri.LongPath.Directory;
 using Path = Pri.LongPath.Path;
 
@@ -15,8 +14,8 @@ namespace CustomBeatmaps.CustomData
 {
     public class PackageManagerServer : PackageManagerGeneric<CustomPackageServer>
     {
-        protected List<TEMPOnlinePackage> _onlinePackages = new();
-        public List<TEMPOnlinePackage> OnlinePackages => _onlinePackages;
+        protected List<OnlinePackage> _onlinePackages = new();
+        public List<OnlinePackage> OnlinePackages => _onlinePackages;
         protected virtual string onlinePkgSource => CustomBeatmaps.BackendConfig.ServerPackageList;
 
         public PackageManagerServer(Action<BeatmapException> onLoadException) : base(onLoadException)
@@ -43,7 +42,10 @@ namespace CustomBeatmaps.CustomData
                         KillAllWatchers();
                         _watchers.Add(FileWatchHelper.WatchFolder(_folder, false, OnFileChange));
                     }
-                    //_onlinePackages = TEMPOnlineHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
+                    //_onlinePackages = new();
+                    _onlinePackages = PackageServerHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
+                    ScheduleHelper.SafeLog($"WE HAVE {_onlinePackages.Count} ONLINE");
+                    /*
                     if (Config.Mod.ShowHiddenStuff)
                     {
                         _onlinePackages = TEMPOnlineHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
@@ -52,9 +54,10 @@ namespace CustomBeatmaps.CustomData
                     {
                         _onlinePackages = new(); // disabled again for now
                     }
-                        
-                    //var packages = PackageServerHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
-                    var packages = TEMPOnlineHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
+                    */
+
+                    var packages = PackageServerHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
+                    //var packages = TEMPOnlineHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
                     {
                         InitialLoadState.Loaded++;
                     }, _onLoadException).ToList();
@@ -123,15 +126,17 @@ namespace CustomBeatmaps.CustomData
 
                 foreach (string subDir in dirs)
                 {
-                    //if (PackageServerHelper.TryLoadLocalServerPackage(subDir, _folder, out CustomPackageServer package, _category, false,
-                    //_onLoadException, () => { return Packages.Where(p => p.DownloadStatus == BeatmapDownloadStatus.Downloaded).ToDictionary(p => p.GUID); } ))
-                    if (TEMPOnlineHelper.TryLoadLocalServerPackage(subDir, _folder, out CustomPackageServer package, _category, false,
+                    if (PackageServerHelper.TryLoadLocalServerPackage(subDir, _folder, out CustomPackageServer package, _category, false,
+                    _onLoadException, () => { return Packages.Where(p => p.DownloadStatus == BeatmapDownloadStatus.Downloaded).ToDictionary(p => p.GUID); } ))
+                    /*
+                        if (TEMPOnlineHelper.TryLoadLocalServerPackage(subDir, _folder, out CustomPackageServer package, _category, false,
                     _onLoadException, () => { return Packages.Where(p => p.DownloadStatus == BeatmapDownloadStatus.Downloaded).ToDictionary(p =>
                     {
                         if (p.ServerURL != null)
                             return p.ServerURL;
                         return p.BaseDirectory;
                     }); }))
+                    */
                     {
                         ScheduleHelper.SafeInvoke(() => package.SongDatas.ForEach(s => s.Song.GetTexture()));
                         ScheduleHelper.SafeLog($"UPDATING PACKAGE: {subDir}");
@@ -139,17 +144,17 @@ namespace CustomBeatmaps.CustomData
                         {
 
                             // Use online data if we can find it
-                            //if (OnlinePackages.Any(o => o.GUID == package.GUID))
-                            if (OnlinePackages.Any(o => package.BaseDirectory.Contains(o.FilePath.Substring("packages/".Length))))
+                            if (OnlinePackages.Any(o => o.GUID == package.GUID))
+                            //if (OnlinePackages.Any(o => package.BaseDirectory.Contains(o.FilePath.Substring("packages/".Length))))
                             {
-                                //var opkg = OnlinePackages.First(o => o.GUID == package.GUID);
-                                var opkg = OnlinePackages.First(o => package.BaseDirectory.Contains(o.FilePath.Substring("packages/".Length)));
+                                var opkg = OnlinePackages.First(o => o.GUID == package.GUID);
+                                //var opkg = OnlinePackages.First(o => package.BaseDirectory.Contains(o.FilePath.Substring("packages/".Length)));
                                 //package.ServerURL = opkg.ServerURL;
-                                package.ServerURL = opkg.FilePath;
+                                package.ServerURL = opkg.GUID.ToString();
                                 package.Time = opkg.UploadTime;
 
-                                //var toReplace = _packages.FindIndex(o => o.GUID == package.GUID);
-                                var toReplace = _packages.FindIndex(o => o.ServerURL == package.ServerURL);
+                                var toReplace = _packages.FindIndex(o => o.GUID == package.GUID);
+                                //var toReplace = _packages.FindIndex(o => o.ServerURL == package.ServerURL);
                                 _packages[toReplace] = package;
                             }
                             // Add like normal otherwise
@@ -196,11 +201,13 @@ namespace CustomBeatmaps.CustomData
                     //lock (_watchers)
                     //    _watchers.Remove(FileWatchHelper.WatchFolder(fullPath, true, OnFileChange));
 
-                    //if (OnlinePackages.Exists(o => o.GUID == p.GUID) &&
-                    //    PackageServerHelper.TryLoadOnlineServerPackage(OnlinePackages.First(o => o.GUID == p.GUID), out var package, _category, _onLoadException))
+                    if (OnlinePackages.Exists(o => o.GUID == p.GUID) &&
+                        PackageServerHelper.TryLoadOnlineServerPackage(OnlinePackages.First(o => o.GUID == p.GUID), out var package, _category, _onLoadException))
+                    /*
                     if (OnlinePackages.Exists(o => o.FilePath == p.ServerURL) &&
                         TEMPOnlineHelper.TryLoadOnlineServerPackage(OnlinePackages.First(o => o.FilePath == p.ServerURL),
                         out var package, _category, _onLoadException))
+                    */
                     {
                         _packages.Add(package);
                     }

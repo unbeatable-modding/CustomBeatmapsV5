@@ -88,8 +88,8 @@ namespace CustomBeatmaps.CustomData
 
         public string CoverArtArtist
         {
-            get => Tags.CoverArtArtist;
-            set => Tags.CoverArtArtist = value;
+            get => Tags.CoverArt;
+            set => Tags.CoverArt = value;
         }
         public float PreviewTime
         {
@@ -208,7 +208,7 @@ namespace CustomBeatmaps.CustomData
             Artist = oBmap.Artist;
             Creator = oBmap.Creator;
             Difficulty = oBmap.Difficulty;
-            InternalDifficulty = oBmap.InternalDifficulty;
+            InternalDifficulty = oBmap.InternalDifficulty.ToString();
 
             var tagTest = oBmap.Tags;
             if (tagTest.StartsWith("{") && tagTest.EndsWith("}"))

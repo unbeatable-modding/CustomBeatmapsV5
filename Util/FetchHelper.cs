@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace CustomBeatmaps.Util
         public static async Task<T> GetJSON<T>(string url, Dictionary<string, string> headers = null)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, url);
+
             if (headers != null)
             {
                 foreach (var header in headers)
@@ -23,10 +25,12 @@ namespace CustomBeatmaps.Util
                     request.Headers.Add(header.Key, header.Value);
                 }
             }
+
             var response = await HttpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
 
             string mediaType = response.Content.Headers.ContentType?.MediaType;
-            if (mediaType == "application/json")
+            if (mediaType != null && mediaType == "application/json")
             {
                 return await SerializeHelper.DeserializeJSONAsync<T>(await response.Content.ReadAsStreamAsync());
             }

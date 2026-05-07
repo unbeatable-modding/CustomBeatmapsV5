@@ -177,15 +177,14 @@ namespace CustomBeatmaps.Util.CustomData
             if (GUIDs != null && GUIDs.Invoke().ContainsKey(oPkg.GUID))
             {
                 package = new CustomPackageServer();
-                onBeatmapFail.Invoke(new BeatmapException("Online Package is Duplicate???", oPkg.ServerURL));
+                onBeatmapFail.Invoke(new BeatmapException("Online Package is Duplicate???", oPkg.Name));
                 return false;
             }
 
             var songs = new Dictionary<string, SongData>();
 
             package.GUID = oPkg.GUID;
-            package.ServerURL = oPkg.ServerURL;
-            //package.BaseDirectory = oPkg.ServerURL;
+            //package.ServerURL = oPkg.ServerURL;
             package.Time = oPkg.UploadTime;
             package.DownloadStatus = BeatmapDownloadStatus.NotDownloaded;
 
@@ -213,6 +212,8 @@ namespace CustomBeatmaps.Util.CustomData
             if (oPkg.Artists != null)
                 package.Artists = oPkg.Artists;
 
+            package.OnlinePackage = oPkg;
+
             // This folder has some beatmaps!
             if (songs.Any())
             {
@@ -233,8 +234,9 @@ namespace CustomBeatmaps.Util.CustomData
                 var pkgList = await FetchHelper.GetJSON<OnlinePackageList>(url);
                 return pkgList.Packages;
             }
-            catch
+            catch (Exception error)
             {
+                CustomBeatmaps.Log.LogError($"FETCH FAILED: {error}");
                 return [];
             }
         }
@@ -255,16 +257,20 @@ namespace CustomBeatmaps.Util.CustomData
         /// <param name="callback"> Returns the local path of the downloaded file </param>
         public static async Task DownloadPackage(CustomPackageServer pkg, string packageDownloadURL, string localServerPackageDirectory)
         {
-            string serverDownloadURL = (packageDownloadURL + "/" + pkg.ServerURL);
+            if (pkg.OnlinePackage == null)
+                return;
+            string serverDownloadURL = $"{packageDownloadURL}/{pkg.GUID}/download";
             //string localDownloadExtractPath = Path.Combine(localServerPackageDirectory, pkg.GUID.ToString());
-            string localDownloadExtractPath = Path.Combine(localServerPackageDirectory, pkg.ServerURL.Substring("packages/".Length));
+            string localDownloadExtractPath = Path.Combine(localServerPackageDirectory, pkg.GUID.ToString());
 
-            await DownloadPackageInner(serverDownloadURL, localDownloadExtractPath);
+            await DownloadPackageInner(serverDownloadURL, localDownloadExtractPath, (OnlinePackage)pkg.OnlinePackage);
+            //pkg.DownloadStatus = BeatmapDownloadStatus.Downloaded;
+            //CustomBeatmaps.LocalServerPackages.UpdatePackageTest(localDownloadExtractPath);
         }
 
         private static bool _dealingWithTempFile;
 
-        private static async Task DownloadPackageInner(string downloadURL, string targetFolder)
+        private static async Task DownloadPackageInner(string downloadURL, string targetFolder, OnlinePackage oPkg)
         {
             ScheduleHelper.SafeLog($"Downloading package from {downloadURL} to {targetFolder}");
 
@@ -284,15 +290,26 @@ namespace CustomBeatmaps.Util.CustomData
 
                 // Extract
                 ZipHelper.ExtractToDirectory(tempDownloadFilePath, targetFolder);
+                
                 // Delete old
                 File.Delete(tempDownloadFilePath);
+                if (File.Exists($"{targetFolder}\\package.bmap"))
+                {
+                    File.Delete($"{targetFolder}\\package.bmap");
+                }
+
+                var pkgCore = await GeneratePackageCore(oPkg);
+                
+                await SerializeHelper.SaveJSONAsync($"{targetFolder}\\package.bmap", pkgCore);
 
                 // bad but works
+                /*
                 foreach (string subDir in Directory.EnumerateDirectories(targetFolder, "*.*", SearchOption.AllDirectories).AddItem(targetFolder).ToHashSet())
                 {
-                    await PackageHelper.TryPopulatePackageCore(subDir, Config.Mod.ServerPackagesDir);
+                    await PackageHelper.TryPopulatePackageCore(subDir, Config.Mod.ServerPackagesDir, guid: guid);
                 }
-                ScheduleHelper.SafeInvoke(() => CustomBeatmaps.LocalServerPackages.UpdatePackageTest(targetFolder));
+                await Task.Delay(400); // removes some sort of bad timing idk
+                */
 
             }
             catch (Exception)
@@ -301,6 +318,32 @@ namespace CustomBeatmaps.Util.CustomData
                 throw;
             }
             _dealingWithTempFile = false;
+        }
+
+        /// <summary>
+        /// Auto generate a new valid PackageCore from a folder
+        /// </summary>
+        /// <param name="folderPath">Directory to generate package from</param>
+        /// <param name="recursive">Bool to check recursively for beatmaps</param>
+        public static Task<PackageCore> GeneratePackageCore(OnlinePackage oPkg, bool recursive = true)
+        {
+            PackageCore pkgCore = new();
+
+            pkgCore.Name = oPkg.Name;
+            pkgCore.Mappers = oPkg.Mappers;
+            pkgCore.Artists = oPkg.Artists;
+            pkgCore.GUID = oPkg.GUID;
+
+            for (int i = 0; i < oPkg.Songs.Length; i++)
+            {
+                pkgCore.Songs.Add(new SortedDictionary<InternalDifficulty, string>());
+                foreach (OnlineBeatmap bmap in oPkg.Songs[i])
+                {
+                    pkgCore.Songs[i].Add(bmap.InternalDifficulty, bmap.FilePath);
+                }
+            }
+
+            return Task.FromResult(pkgCore);
         }
 
     }

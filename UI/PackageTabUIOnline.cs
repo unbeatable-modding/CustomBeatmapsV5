@@ -108,11 +108,12 @@ namespace CustomBeatmaps.UI
                             {
                                 GUILayout.Label("<size=24><b>USING ASSISTS</b></size> (no high score)");
                             }
+                            /*
                             else if (!CustomBeatmaps.UserSession.LoggedIn != (CustomBeatmaps.UserSession.LocalSessionExists() != CustomBeatmaps.UserSession.LoginFailed))
                             {
                                 GUILayout.Label("<b>Register above to post your own high scores!<b>");
                             }
-
+                            */
                             bool buttonPressed = PlayButtonUI.Render(buttonText, buttonSub);
                             switch (DLStatus)
                             {

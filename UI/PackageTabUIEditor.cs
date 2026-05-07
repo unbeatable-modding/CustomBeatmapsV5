@@ -60,7 +60,7 @@ namespace CustomBeatmaps.UI
                         {
                             string exportFolder = Config.Mod.OsuExportDirectory;
                             string exportName = _selectedBeatmap.SongName;
-                            OSUHelper.CreateExportZipFile(_selectedPackage, exportFolder);
+                            EditorHelper.CreateExportZipFile(_selectedPackage, exportFolder);
                         }
                         PackageBeatmapPickerUI.Render(_selectableBeatmaps, SelectedBeatmapIndex, SetSelectedBeatmapIndex);
                         if (PlayButtonUI.Render("EDIT", $"{_selectedBeatmap.SongName}: {_selectedBeatmap.Difficulty}"))

@@ -1,10 +1,11 @@
 ﻿using CustomBeatmaps.UI;
 using CustomBeatmaps.Util;
-
+using System;
 using File = Pri.LongPath.File;
 
 namespace CustomBeatmaps
 {
+
     public class GameMemory
     {
         public int SelectedRoom = 0;
@@ -15,6 +16,20 @@ namespace CustomBeatmaps
         public bool FlipMode = false;
 
         public string lastSelectedSong;
+
+        public string lastVersion
+        {
+            get
+            {
+                return (_lastVersion ?? "0.0.0");
+            }
+            set
+            {
+                _lastVersion = value;
+            }
+        }
+
+        private string _lastVersion = null;
 
         public static GameMemory Load(string path)
         {

@@ -44,7 +44,10 @@ namespace CustomBeatmaps.Util
 
         public float PreviewTime;
 
-        public string CoverArtArtist;
+        /// <summary>
+        /// Artist of cover art
+        /// </summary>
+        public string CoverArt;
 
         /// <summary>
         /// Unity Scene song is playing on

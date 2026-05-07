@@ -35,6 +35,21 @@ namespace CustomBeatmaps.Util
             }
         }
 
+        public static void SaveJSONIgnoreNull<T>(string filePath, T data)
+        {
+            try
+            {
+                lock (_avoidmultiwriteLock)
+                {
+                    File.WriteAllText(filePath, SerializeJSONIgnoreNull(data, true));
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to save JSON file: {filePath}", e);
+            }
+        }
+
         public static async Task SaveJSONAsync<T>(string filePath, T data)
         {
             var stream = File.Open(filePath, FileMode.Create, FileAccess.Write);
@@ -92,6 +107,25 @@ namespace CustomBeatmaps.Util
             {
                 serializer.Formatting = Formatting.Indented;
             }
+            serializer.Converters.Add(new JavaScriptDateTimeConverter());
+
+            serializer.Serialize(jwriter, obj);
+
+            return sw.ToString();
+        }
+
+        public static string SerializeJSONIgnoreNull<T>(T obj, bool prettyPrint = false)
+        {
+            StringWriter sw = new StringWriter();
+            JsonWriter jwriter = new JsonTextWriter(sw);
+
+            JsonSerializer serializer = new JsonSerializer();
+            if (prettyPrint)
+            {
+                serializer.Formatting = Formatting.Indented;
+            }
+            serializer.NullValueHandling = NullValueHandling.Ignore;
+            serializer.DefaultValueHandling = DefaultValueHandling.Ignore;
             serializer.Converters.Add(new JavaScriptDateTimeConverter());
 
             serializer.Serialize(jwriter, obj);

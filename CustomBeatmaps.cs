@@ -70,6 +70,21 @@ namespace CustomBeatmaps
 
             // Load game memory from disk
             Memory = GameMemory.Load(MEMORY_LOCATION);
+
+            
+            Version thisVer = VersionHelper.GetModVersion();
+            Version lastVer = new Version(Memory.lastVersion);
+            if (lastVer != thisVer)
+            {
+                if (//Directory.Exists("CustomBeatmapsV4-Data") 
+                    File.Exists("CustomBeatmapsV4-Data/custombeatmaps_backend.json")
+                    && lastVer <= new Version(5, 0, 13))
+                {
+                    File.Delete("CustomBeatmapsV4-Data/custombeatmaps_backend.json");
+                }
+                Memory.lastVersion = thisVer.ToString();
+                GameMemory.Save(MEMORY_LOCATION, Memory);
+            }
             
             ConfigHelper.LoadConfig("custombeatmaps_config.json", () => new ModConfig(), config =>
             {

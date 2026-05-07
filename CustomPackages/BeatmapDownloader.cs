@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CustomBeatmaps.Util;
 using CustomBeatmaps.Util.CustomData;
 
@@ -78,6 +79,8 @@ namespace CustomBeatmaps.CustomPackages
                     Config.Backend.ServerStorageURL,
                     pkgDir);
                 package.DownloadStatus = BeatmapDownloadStatus.Downloaded;
+                //await Task.Delay(400);
+                CustomBeatmaps.LocalServerPackages.UpdatePackageTest(Pri.LongPath.Path.Combine(Config.Backend.ServerStorageURL, package.GUID.ToString()));
             }
             catch (Exception e)
             {

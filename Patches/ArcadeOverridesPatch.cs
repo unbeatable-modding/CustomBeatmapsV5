@@ -75,9 +75,8 @@ namespace CustomBeatmaps.Patches
 
         [HarmonyPatch(typeof(ArcadeSongInfos), "SongInfosStringChanged")]
         [HarmonyPostfix]
-        public static void ShowCustomInfo(string value, ref TextMeshProUGUI ___songInfos, ArcadeSongDatabase.BeatmapItem ___song)
+        public static void ShowCustomInfo(ref TextMeshProUGUI ___songInfos, ArcadeSongDatabase.BeatmapItem ___song)
         {
-            ___songInfos.text = value;
             if (___song != null && ___song.CustomSong && (((ModdedBeatmapInfo)___song.BeatmapInfo).Data.Attributes.Count > 0))
             {
                 ___songInfos.text += "\n\n";
@@ -87,11 +86,10 @@ namespace CustomBeatmaps.Patches
             }
         }
 
-        [HarmonyPatch(typeof(ArcadeSongInfos), "SongInfosStringSelectedChanged")]
-        [HarmonyPostfix]
-        public static void ShowCustomSelectedInfo(string value, ref TextMeshProUGUI ___songInfosSelected, ArcadeSongDatabase.BeatmapItem ___song)
+        //[HarmonyPatch(typeof(ArcadeSongInfos), "SongInfosStringSelectedChanged")]
+        //[HarmonyPostfix]
+        public static void ShowCustomSelectedInfo(ref TextMeshProUGUI ___songInfosSelected, ArcadeSongDatabase.BeatmapItem ___song)
         {
-            ___songInfosSelected.text = value;
             if (___song != null && ___song.CustomSong && (((ModdedBeatmapInfo)___song.BeatmapInfo).Data.Attributes.Count > 0))
             {
                 ___songInfosSelected.text += "\n\n";

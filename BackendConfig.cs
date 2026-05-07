@@ -6,14 +6,14 @@
     public class BackendConfig
     {
         /// Grabs list of all package files
-        public string ServerPackageList = "http://64.225.60.116:8080/packages.json";
+        public string ServerPackageList = "https://unchartable.onrender.com/api/integrations/packages";
         /// Grabs list of all submissions currently pending
         public string ServerSubmissionList = "http://64.225.60.116:8080/submissions.json";
         /// Grabs all high scores
         public string ServerHighScores = "http://64.225.60.116:8080/highscores.json";
         public string ServerLowScores = "http://64.225.60.116:8080/lowscores.json";
         /// The directory for all server data
-        public string ServerStorageURL = "http://64.225.60.116:8080";
+        public string ServerStorageURL = "https://unchartable.onrender.com/api/charts/";
         /// The root folder within the server directory
         public string ServerPackageRoot = "packages";
         /// Where we grab user data from
