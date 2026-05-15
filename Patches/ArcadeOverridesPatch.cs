@@ -86,8 +86,8 @@ namespace CustomBeatmaps.Patches
             }
         }
 
-        //[HarmonyPatch(typeof(ArcadeSongInfos), "SongInfosStringSelectedChanged")]
-        //[HarmonyPostfix]
+        [HarmonyPatch(typeof(ArcadeSongInfos), "SongInfosStringSelectedChanged")]
+        [HarmonyPostfix]
         public static void ShowCustomSelectedInfo(ref TextMeshProUGUI ___songInfosSelected, ArcadeSongDatabase.BeatmapItem ___song)
         {
             if (___song != null && ___song.CustomSong && (((ModdedBeatmapInfo)___song.BeatmapInfo).Data.Attributes.Count > 0))

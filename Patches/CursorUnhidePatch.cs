@@ -1,6 +1,8 @@
 ﻿using CustomBeatmaps.UI;
 using CustomBeatmaps.UI.Highscore;
 using HarmonyLib;
+using IL3DN;
+using Rewired.Demos;
 using UnityEngine;
 
 namespace CustomBeatmaps.Patches
@@ -16,8 +18,8 @@ namespace CustomBeatmaps.Patches
         {
             if (CustomBeatmapsUIBehaviour.Opened || HighScoreUIBehaviour.Opened || !CustomBeatmaps.Memory.OpeningDisclaimerDisabled)
             {
-                Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
         }
     }

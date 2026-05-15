@@ -13,7 +13,7 @@
         public string ServerHighScores = "http://64.225.60.116:8080/highscores.json";
         public string ServerLowScores = "http://64.225.60.116:8080/lowscores.json";
         /// The directory for all server data
-        public string ServerStorageURL = "https://unchartable.onrender.com/api/charts/";
+        public string ServerStorageURL = "https://unchartable.onrender.com/api/charts";
         /// The root folder within the server directory
         public string ServerPackageRoot = "packages";
         /// Where we grab user data from

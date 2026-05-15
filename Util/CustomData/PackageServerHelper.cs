@@ -125,6 +125,7 @@ namespace CustomBeatmaps.Util.CustomData
                                 pkgFetch.SongDatas = songs.Values.ToList();
                                 pkgFetch.DownloadStatus = BeatmapDownloadStatus.Downloaded;
                                 pkgFetch.BaseDirectory = package.BaseDirectory;
+                                ScheduleHelper.SafeInvoke(() => pkgFetch.SongDatas.ForEach(s => s.Song.GetTexture()));
                                 package = new CustomPackageServer();
                                 return false;
                             }
@@ -263,6 +264,8 @@ namespace CustomBeatmaps.Util.CustomData
             //string localDownloadExtractPath = Path.Combine(localServerPackageDirectory, pkg.GUID.ToString());
             string localDownloadExtractPath = Path.Combine(localServerPackageDirectory, pkg.GUID.ToString());
 
+            //OnlinePackage oPkg = pkg.OnlinePackage.GetValueOrDefault();
+
             await DownloadPackageInner(serverDownloadURL, localDownloadExtractPath, (OnlinePackage)pkg.OnlinePackage);
             //pkg.DownloadStatus = BeatmapDownloadStatus.Downloaded;
             //CustomBeatmaps.LocalServerPackages.UpdatePackageTest(localDownloadExtractPath);
@@ -271,7 +274,7 @@ namespace CustomBeatmaps.Util.CustomData
         private static bool _dealingWithTempFile;
 
         private static async Task DownloadPackageInner(string downloadURL, string targetFolder, OnlinePackage oPkg)
-        {
+        {   
             ScheduleHelper.SafeLog($"Downloading package from {downloadURL} to {targetFolder}");
 
             string tempDownloadFilePath = ".TEMP.zip";
@@ -297,7 +300,7 @@ namespace CustomBeatmaps.Util.CustomData
                 {
                     File.Delete($"{targetFolder}\\package.bmap");
                 }
-
+                CustomBeatmaps.Log.LogMessage($"ONLINE PACKAGE NAME: {oPkg.Name}");
                 var pkgCore = await GeneratePackageCore(oPkg);
                 
                 await SerializeHelper.SaveJSONAsync($"{targetFolder}\\package.bmap", pkgCore);
@@ -328,13 +331,14 @@ namespace CustomBeatmaps.Util.CustomData
         public static Task<PackageCore> GeneratePackageCore(OnlinePackage oPkg, bool recursive = true)
         {
             PackageCore pkgCore = new();
+            pkgCore.Songs = new();
 
             pkgCore.Name = oPkg.Name;
             pkgCore.Mappers = oPkg.Mappers;
             pkgCore.Artists = oPkg.Artists;
             pkgCore.GUID = oPkg.GUID;
 
-            for (int i = 0; i < oPkg.Songs.Length; i++)
+            for (int i = 0; i < oPkg.Songs.Count(); i++)
             {
                 pkgCore.Songs.Add(new SortedDictionary<InternalDifficulty, string>());
                 foreach (OnlineBeatmap bmap in oPkg.Songs[i])

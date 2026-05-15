@@ -148,13 +148,6 @@ namespace CustomBeatmaps.CustomData
             AccessTools.PropertySetter(typeof(Song), nameof(Song.CustomAudioFile))
                     .Invoke(Song, new object[] { bmap.AudioPath });
 
-            
-            //Traverse.Method("set_IsCustomSong").Field("value").SetValue(true);
-            //Traverse.Property("set_CustomPath").Field("value").SetValue(bmap.DirectoryPath);
-            //Traverse.Property("set_CustomAudioFile").Field("value").SetValue(bmap.AudioPath);
-            //Traverse.Property("CustomPath").SetValue(bmap.DirectoryPath);
-            //Traverse.Property("CustomAudioFile").SetValue(bmap.AudioPath);
-
             // not new sstuff
             Traverse.Field("_difficulties").SetValue(new List<string>());
             Traverse.Field("beatmaps").SetValue(new List<BeatmapInfo>());

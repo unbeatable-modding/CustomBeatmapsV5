@@ -32,7 +32,6 @@ namespace CustomBeatmaps.Util
     /// <summary>
     /// Server Formatted Package
     /// </summary>
-    #nullable enable
     public struct OnlinePackage 
     {
         [JsonProperty("name")]

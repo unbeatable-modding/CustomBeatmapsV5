@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CustomBeatmaps.CustomData;
+using CustomBeatmaps.Util;
+using CustomBeatmaps.Util.CustomData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CustomBeatmaps.Util;
-using CustomBeatmaps.Util.CustomData;
 
 namespace CustomBeatmaps.CustomPackages
 {
@@ -79,8 +80,20 @@ namespace CustomBeatmaps.CustomPackages
                     Config.Backend.ServerStorageURL,
                     pkgDir);
                 package.DownloadStatus = BeatmapDownloadStatus.Downloaded;
-                //await Task.Delay(400);
-                CustomBeatmaps.LocalServerPackages.UpdatePackageTest(Pri.LongPath.Path.Combine(Config.Backend.ServerStorageURL, package.GUID.ToString()));
+                await Task.Delay(100);
+                /*
+                Dictionary<Guid, CustomPackageServer> pkgs =
+                new()
+                {
+                    {package.GUID, package}
+                };
+                Func<Dictionary<Guid, CustomPackageServer>> getPkgs = () => { return pkgs; };
+                PackageServerHelper.TryLoadLocalServerPackage(pkgDir, Config.Backend.ServerStorageURL, out _, new CCategory("server"), recursive: false, getPkgs: getPkgs);
+                */
+
+                // this code so so so bad
+                await CustomBeatmaps.LocalServerPackages.UpdatePackageTest(Pri.LongPath.Path.Combine(Config.Backend.ServerStorageURL, package.GUID.ToString()));
+                ArcadeHelper.ReloadArcadeList();
             }
             catch (Exception e)
             {

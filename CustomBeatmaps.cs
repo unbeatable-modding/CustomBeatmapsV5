@@ -37,8 +37,6 @@ namespace CustomBeatmaps
         public static UserSession UserSession { get; private set; }
         public static PackageManagerMulti LocalUserPackages { get; private set; }
         public static PackageManagerServer LocalServerPackages { get; private set; }
-        // TODO: MAKE WORK
-        //public static PackageManagerSubmission LocalSubmissionPackages { get; private set; }
         public static PackageManagerLocal LocalEditorPackages { get; private set; }
         public static ServerHighScoreManager ServerHighScoreManager { get; private set; }
         public static BeatmapDownloader Downloader { get; private set; }

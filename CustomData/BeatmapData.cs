@@ -12,10 +12,10 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEngine;
 using static CustomBeatmaps.Util.CustomData.BeatmapHelper;
-using static CustomBeatmaps.Util.TEMPOnlineHelper;
 using static Rhythm.BeatmapIndex;
 using File = Pri.LongPath.File;
 using Path = Pri.LongPath.Path;
+using Directory = Pri.LongPath.Directory;
 
 namespace CustomBeatmaps.CustomData
 {
@@ -226,44 +226,6 @@ namespace CustomBeatmaps.CustomData
             IsLocal = false;
         }
 
-        /// <summary>
-        /// BeatmapData from Online Beatmaps (temp)
-        /// </summary>
-        public BeatmapData(TEMPOnlineBeatmap oBmap, Guid guid, int offset, CCategory category)
-        {
-            Category = category;
-            Offset = offset;
-
-            SongName = oBmap.SongName;
-            GUID = guid;
-            Artist = oBmap.Artist;
-            Creator = oBmap.Creator;
-            Difficulty = oBmap.Difficulty;
-
-            InternalDifficulty = "Star"; // Default to Star difficulty
-            var bmapVer = oBmap.Difficulty.ToLower();
-            Dictionary<string, string> difficultyIndex = new Dictionary<string, string>
-                {
-                    {"beginner", "Beginner"},
-                    {"easy", "Beginner"}, // easy is a lie shove the song into normal
-                    {"normal", "Easy"},
-                    {"hard", "Normal"},
-                    {"expert", "Hard"},
-                    {"beatable", "Hard"}, // A lot of maps like using this idk
-                    {"unbeatable", "UNBEATABLE"}
-                };
-            foreach (var i in difficultyIndex.Keys.ToArray())
-            {
-                if (bmapVer.ToLower().StartsWith(i))
-                {
-                    InternalDifficulty = difficultyIndex[i];
-                    break;
-                }
-            }
-
-            IsLocal = false;
-        }
-
         private bool CreateLocalPackagedBeatmap()
         {
             try
@@ -289,8 +251,11 @@ namespace CustomBeatmaps.CustomData
                     string[] defaults = ["cover.png", "cover.jpg", "cover.webp"];
                     foreach (string s in defaults)
                     {
-                        if (File.Exists($"{DirectoryPath}\\{s}")) {
-                            CoverPath = s;
+                        // recursive can and will hurt you
+                        var c = Directory.EnumerateFiles(DirectoryPath, s, SearchOption.AllDirectories).FirstOrDefault();
+                        if (c != null)
+                        {
+                            CoverPath = c.Substring(DirectoryPath.Length + 1);
                             break;
                         }
                     }

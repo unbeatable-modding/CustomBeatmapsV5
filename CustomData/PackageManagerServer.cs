@@ -45,19 +45,8 @@ namespace CustomBeatmaps.CustomData
                     //_onlinePackages = new();
                     _onlinePackages = PackageServerHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
                     ScheduleHelper.SafeLog($"WE HAVE {_onlinePackages.Count} ONLINE");
-                    /*
-                    if (Config.Mod.ShowHiddenStuff)
-                    {
-                        _onlinePackages = TEMPOnlineHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
-                    }
-                    else
-                    {
-                        _onlinePackages = new(); // disabled again for now
-                    }
-                    */
 
                     var packages = PackageServerHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
-                    //var packages = TEMPOnlineHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>
                     {
                         InitialLoadState.Loaded++;
                     }, _onLoadException).ToList();
@@ -94,9 +83,10 @@ namespace CustomBeatmaps.CustomData
             }).Start();
         }
 
-        public void UpdatePackageTest(string folderPath)
+        public Task UpdatePackageTest(string folderPath)
         {
             UpdatePackage(folderPath);
+            return Task.CompletedTask;
         }
 
         protected override void UpdatePackage(string folderPath)
@@ -149,13 +139,13 @@ namespace CustomBeatmaps.CustomData
                             {
                                 var opkg = OnlinePackages.First(o => o.GUID == package.GUID);
                                 //var opkg = OnlinePackages.First(o => package.BaseDirectory.Contains(o.FilePath.Substring("packages/".Length)));
-                                //package.ServerURL = opkg.ServerURL;
                                 package.ServerURL = opkg.GUID.ToString();
                                 package.Time = opkg.UploadTime;
 
                                 var toReplace = _packages.FindIndex(o => o.GUID == package.GUID);
                                 //var toReplace = _packages.FindIndex(o => o.ServerURL == package.ServerURL);
                                 _packages[toReplace] = package;
+                                
                             }
                             // Add like normal otherwise
                             else
@@ -183,7 +173,6 @@ namespace CustomBeatmaps.CustomData
             {
                 ScheduleHelper.SafeInvoke(() => CustomBeatmaps.Log.LogError(e));
             }
-            
         }
 
         protected override void RemovePackage(string folderPath)
@@ -203,11 +192,6 @@ namespace CustomBeatmaps.CustomData
 
                     if (OnlinePackages.Exists(o => o.GUID == p.GUID) &&
                         PackageServerHelper.TryLoadOnlineServerPackage(OnlinePackages.First(o => o.GUID == p.GUID), out var package, _category, _onLoadException))
-                    /*
-                    if (OnlinePackages.Exists(o => o.FilePath == p.ServerURL) &&
-                        TEMPOnlineHelper.TryLoadOnlineServerPackage(OnlinePackages.First(o => o.FilePath == p.ServerURL),
-                        out var package, _category, _onLoadException))
-                    */
                     {
                         _packages.Add(package);
                     }
@@ -230,6 +214,12 @@ namespace CustomBeatmaps.CustomData
                 string targetFullPath = Path.GetFullPath(folder);
                 return _downloadedFolders.Contains(targetFullPath);
             }
+        }
+        
+        // NOTE: fine for now but actually try generating with GUID in future
+        public override void GenerateCorePackages()
+        {
+            return;
         }
 
         protected override void OnFileChange(FileSystemEventArgs evt)
