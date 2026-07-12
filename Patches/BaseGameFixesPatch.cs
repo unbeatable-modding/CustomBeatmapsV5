@@ -69,5 +69,74 @@ namespace CustomBeatmaps.Patches
             }
             return toCull;
         }
+
+        /// <remarks>
+        /// Fix found by Stefyfresh
+        /// </remarks>
+        [HarmonyPatch(typeof(RhythmTracker))]
+        [HarmonyPatch("HandleCreateProgrammerSound")]
+        static IEnumerable<CodeInstruction> SoundCreationTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            // Add MODE.ACCURATETIME to the Mode parameter when creating the programmer sound
+
+            bool found = false;
+            foreach (var instruction in instructions)
+            {
+                // transpiler nonsense
+                if (instruction.opcode == OpCodes.Ldc_I4 && (int)instruction.operand == 66050) // 66050 = MODE.LOOP_NORMAL | MODE.CREATECOMPRESSEDSAMPLE | MODE.NONBLOCKING
+                {
+                    found = true;
+                    yield return new CodeInstruction(OpCodes.Ldc_I4, 82434); // 82434 = MODE.LOOP_NORMAL | MODE.CREATECOMPRESSEDSAMPLE | MODE.NONBLOCKING | MODE.ACCURATETIME
+                }
+                else
+                {
+                    yield return instruction;
+                }
+            }
+
+            if (found)
+            {
+                CustomBeatmaps.Log.LogDebug("Successfully patched sound mode info.");
+            }
+            else
+            {
+                CustomBeatmaps.Log.LogError("Could not find sound mode info to patch!");
+            }
+        }
+
+        /// <remarks>
+        /// Fix found by Stefyfresh
+        /// </remarks>
+        [HarmonyPatch(typeof(RhythmTracker))]
+        [HarmonyPatch("GetSongDuration")]
+        private static IEnumerable<CodeInstruction> GetSongDurationTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            // Add MODE.ACCURATETIME to the Mode parameter when getting song duration
+
+            bool found = false;
+            foreach (var instruction in instructions)
+            {
+                // transpiler nonsense
+                if (instruction.opcode == OpCodes.Ldc_I4 && instruction.operand is int num && num == 8448) // 8448 = MODE.CREATESAMPLE | MODE.OPENONLY
+                {
+                    found = true;
+                    instruction.operand = 24832; // 24832 = MODE.CREATESAMPLE | MODE.OPENONLY | MODE.ACCURATETIME
+                    yield return instruction;
+                }
+                else
+                {
+                    yield return instruction;
+                }
+            }
+
+            if (found)
+            {
+                CustomBeatmaps.Log.LogDebug("Successfully patched sound mode info for duration.");
+            }
+            else
+            {
+                CustomBeatmaps.Log.LogError("Could not find sound mode info for duration to patch!");
+            }
+        }
     }
 }

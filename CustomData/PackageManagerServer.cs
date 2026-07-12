@@ -42,8 +42,8 @@ namespace CustomBeatmaps.CustomData
                         KillAllWatchers();
                         _watchers.Add(FileWatchHelper.WatchFolder(_folder, false, OnFileChange));
                     }
-                    //_onlinePackages = new();
-                    _onlinePackages = PackageServerHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
+                    _onlinePackages = new();
+                    //_onlinePackages = PackageServerHelper.FetchOnlinePackageList(onlinePkgSource).Result.ToList();
                     ScheduleHelper.SafeLog($"WE HAVE {_onlinePackages.Count} ONLINE");
 
                     var packages = PackageServerHelper.LoadServerPackages(_folder, _category, OnlinePackages, loadedPackage =>

@@ -138,7 +138,6 @@ namespace CustomBeatmaps
                 typeof(LongPathPatch),
                 typeof(HighScorePatch),
                 typeof(BaseGameFixesPatch),
-                typeof(GameplayPatch),
                 typeof(EditorModePatch)
             };
             foreach (var toPatch in classesToPatch)
@@ -155,7 +154,6 @@ namespace CustomBeatmaps
                 }
             }
 
-            //PackageHelper.TryAddCustomCategory();
         }
 
         public static bool CanGetTexture = false;
